@@ -11,7 +11,7 @@ class Reload(commands.Cog):
         return await self.bot.is_owner(ctx.author)
 
     @commands.command()
-    async def reload(self, ctx, _json):
+    async def reload(self, ctx, _json=None):
         msg = await ctx.send('更新中')
         if _json == 'true':
             with open(f'{self.bot.data_directory}settigs.json') as f:
