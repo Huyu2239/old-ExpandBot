@@ -12,10 +12,13 @@ async def get_embed_type(guild_id):
     with open(f'{data_directory}embed_type.json') as f:
         json_dict = json.load(f)
     num = 0
-    while num < 2:
+    while num < 1:
         num += 1
         if guild_id in json_dict.get(str(num)):
             break
+    else:
+        print('未設定')
+        num = 1
     return num
 
 
