@@ -16,7 +16,7 @@ class Mochi(commands.Bot):
     def __init__(self, command_prefix, **options):
         self.command_prefix = command_prefix
         prefix = commands.when_mentioned_or(command_prefix)
-        allowed_mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)
+        allowed_mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)  # 個人のメンションのみ反応
         intents = discord.Intents.all()
         super().__init__(
             command_prefix=prefix,
@@ -26,8 +26,10 @@ class Mochi(commands.Bot):
         )
         self.remove_command('help')
         self.data_directory = data_directory
-        with open(f'{self.data_directory}settings.json') as f:
-            self.data = json.load(f)
+        with open(f'{self.data_directory}guild_open.json') as f:
+            self.guild_open = json.load(f)
+        with open(f'{self.data_directory}embed_type.json') as f:
+            self.emnbed_type = json.load(f)
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):

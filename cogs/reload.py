@@ -13,9 +13,11 @@ class Reload(commands.Cog):
     @commands.command()
     async def reload(self, ctx, _json=None):
         msg = await ctx.send('更新中')
-        if _json == 'true':
-            with open(f'{self.bot.data_directory}settigs.json') as f:
-                self.bot.expand = json.load(f)
+        if _json == 'full':
+            with open(f'{self.bot.data_directory}guild_open.json') as f:
+                self.bot.guild_open = json.load(f)
+            with open(f'{self.data_directory}embed_type.json') as f:
+                self.bot.embed_type = json.load(f)
         for cog in os.listdir('./cogs'):
             if cog.endswith('.py'):
                 if cog == 'reload.py':
