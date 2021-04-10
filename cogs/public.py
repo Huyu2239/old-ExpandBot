@@ -1,9 +1,10 @@
-# import discord
+import discord
 from discord.ext import commands  # , tasks
 from discord_slash import SlashContext, cog_ext  # SlashCommand
 # from discord_slash.utils import manage_commands
 
 import asyncio
+import json
 
 
 class Public(commands.Cog):
@@ -20,7 +21,16 @@ class Public(commands.Cog):
         guild_ids=[829431106263580703]
     )
     async def slash_say(self, ctx: SlashContext):
-        await ctx.send('public')
+        embed = ''
+        if ctx.guild.id not in self.bot.guild_open:
+            self.bot.guild_open.append(ctx.guild.id)
+            embed = discord.Embed(description='サーバー外メッセージリンクの展開を**ON**にしました')
+        else:
+            self.bot.guild_open.remove(ctx.guild.id)
+            embed = discord.Embed(description='サーバー外メッセージリンクの展開を**OFF**にしました')
+        await ctx.send(embed=embed)
+        with open(f'{self.bot.data_directory}guild_open.json', 'w') as f:
+            json.dump(self.bot.guild_open, f, indent=4)
 
 
 def setup(bot):
