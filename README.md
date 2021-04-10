@@ -2,4 +2,4 @@
 Discordのメッセージリンクを展開するDiscordbotです。  
 
 # 参考コンテンツ
-Dispand
+[Dispander](https://github.com/DiscordBotPortalJP/dispander)
