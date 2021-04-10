@@ -8,21 +8,23 @@ else:
     data_directory = 'json/'
 
 
-async def compose_embed(message, guild_id):
-    embed_type = await get_embed_type(guild_id)
-    if embed_type == 1:
-        return compose_1(message)
-
-
 async def get_embed_type(guild_id):
     with open(f'{data_directory}embed_type.json') as f:
         json_dict = json.load(f)
     num = 0
-    while num < 3:
+    while num < 2:
         num += 1
         if guild_id in json_dict.get(str(num)):
             break
     return num
+
+
+async def compose_embed(message, guild_id):
+    embed_type = await get_embed_type(guild_id)
+    embed = ''
+    if embed_type == 1:
+        embed = await compose_1(message)
+    return embed, embed_type
 
 
 async def compose_1(message):

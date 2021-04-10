@@ -28,8 +28,7 @@ class Expand(commands.Cog):
         return messages
 
     async def check_open(self, message, target_guild_id):
-        if self.bot.settings.get(str(message.guild.id)) is True \
-           and self.bot.settings.get(str(target_guild_id)) is True:
+        if (message.guild.id and target_guild_id) in self.bot.guild_open:
             return True
         else:
             return False
@@ -46,7 +45,10 @@ class Expand(commands.Cog):
         messages = await self.find_messages(message)
         for m in messages:
             if m.content:
-                await message.channel.send(embed=await compose_embed(m, message.guild.id))
+                embed_message = await compose_embed(m, message.guild.id)
+                if embed_message[1] == 2:  # webhook型
+                    return
+                await message.channel.send(embed=embed_message[0])
             for embed in m.embeds:
                 await message.channel.send(embed=embed)
 

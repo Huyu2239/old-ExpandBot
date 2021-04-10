@@ -12,7 +12,7 @@ else:
     data_directory = 'json/'
 
 
-class Mochi(commands.Bot):
+class Mybot(commands.Bot):
     def __init__(self, command_prefix, **options):
         self.command_prefix = command_prefix
         prefix = commands.when_mentioned_or(command_prefix)
@@ -51,5 +51,5 @@ class Mochi(commands.Bot):
 
 
 if __name__ == '__main__':
-    bot = Mochi(command_prefix="e:")
+    bot = Mybot(command_prefix="e:")
     bot.run(os.environ['TOKEN'])
