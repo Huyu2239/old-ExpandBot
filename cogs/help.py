@@ -69,7 +69,6 @@ class Help(commands.Cog):
         help_msg = await ctx.send(embed=self.help_em[page])
         emoji = '➡'
         await help_msg.add_reaction(emoji)
-        await help_msg.add_reaction(emoji)
         while True:
             def reaction_check(reaction, user):
                 if reaction.message.id == help_msg.id \
@@ -84,7 +83,7 @@ class Help(commands.Cog):
                 await help_msg.remove_reaction(emoji, self.bot.user)
                 return
             # await help_msg.remove_reaction(emoji, user)
-            if page == len(self.em):
+            if page == len(self.em) - 1:
                 # 最大の時は最初に
                 page = 0
             else:
