@@ -44,13 +44,13 @@ class Mybot(commands.Bot):
                 except discord.ext.commands.errors.ExtensionFailed:
                     continue
         print('ready')
-        await self.change_presence(activity=discord.Game(name=f"e:help | {len(self.guilds)}guilds"))
+        await self.change_presence(activity=discord.Game(name=f"/help | {len(self.guilds)}guilds"))
 
     async def on_guild_join(self, _):
-        await self.change_presence(activity=discord.Game(name=f"e:help | {len(self.guilds)}guilds"))
+        await self.change_presence(activity=discord.Game(name=f"/help | {len(self.guilds)}guilds"))
 
     async def on_guild_remove(self, _):
-        await self.change_presence(activity=discord.Game(name=f"e:help | {len(self.guilds)}guilds"))
+        await self.change_presence(activity=discord.Game(name=f"/help | {len(self.guilds)}guilds"))
 
 
 if __name__ == '__main__':
