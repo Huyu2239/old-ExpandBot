@@ -83,13 +83,13 @@ class Help(commands.Cog):
                 await help_msg.remove_reaction(emoji, self.bot.user)
                 return
             # await help_msg.remove_reaction(emoji, user)
-            if page == len(self.em) - 1:
+            if page == len(self.help_em) - 1:
                 # 最大の時は最初に
                 page = 0
             else:
                 # その他は一つ上がる
                 page += 1
-            await help_msg.edit(embed=self.em[page])
+            await help_msg.edit(embed=self.help_em[page])
 
 
 def setup(bot):
