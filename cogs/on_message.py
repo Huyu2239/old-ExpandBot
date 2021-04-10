@@ -1,17 +1,54 @@
 from discord.ext import commands
-from dispander import dispand
+import re
+
+from lib.embed import compose_embed
+
+regex_discord_message_url = (
+    'https://(ptb.|canary.)?discord(app)?.com/channels/'
+    '(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})'
+)
 
 
 class Expand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.guild_only()
+    async def find_messages(self, message):
+        messages = []
+        for ids in re.finditer(regex_discord_message_url, message.content):
+            if message.guild.id != int(ids['guild']):
+                if not await self.check_open(message, int(ids['guild'])):
+                    return
+            fetched_message = await self.fetch_message_from_id(
+                guild=self.bot.get_guild(int(ids['guild'])),
+                channel_id=int(ids['channel']),
+                message_id=int(ids['message']),
+            )
+            messages.append(fetched_message)
+        return messages
+
+    async def check_open(self, message, target_guild_id):
+        if self.bot.settings.get(str(message.guild.id)) is True \
+           and self.bot.settings.get(str(target_guild_id)) is True:
+            return True
+        else:
+            return False
+
+    async def fetch_message_from_id(self, guild, channel_id, message_id):
+        channel = guild.get_channel(channel_id)
+        message = await channel.fetch_message(message_id)
+        return message
+
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author is self.bot.user:
+        if message.author.bot:
             return
-        await dispand(message)
+        messages = await self.find_messages(message)
+        for m in messages:
+            if m.content:
+                await message.channel.send(embed=await compose_embed(m, message.guild.id))
+            for embed in m.embeds:
+                await message.channel.send(embed=embed)
 
 
 def setup(bot):
