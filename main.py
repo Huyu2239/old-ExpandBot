@@ -3,6 +3,8 @@ import os
 
 import discord
 from discord.ext import commands
+from discord_slash import SlashCommand
+
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -30,6 +32,7 @@ class Mybot(commands.Bot):
             self.guild_open = json.load(f)
         with open(f'{self.data_directory}embed_type.json') as f:
             self.emnbed_type = json.load(f)
+        self.slash_client = SlashCommand(self, sync_commands=True)
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):
