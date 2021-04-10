@@ -33,26 +33,26 @@ class Help(commands.Cog):
         ]
         help_em[0].add_field(
             name='URL一覧',
-            value="[サポートサーバー](https://discord.gg/zNBeuM8Epd)\n[導入リンク](https://discord.com/api/oauth2/authorize?client_id=827863670507438130&permissions=85056&scope=bot%20applications.commands)"
+            value="[サポートサーバー](https://discord.gg/CF49JQUnXV)\n[導入リンク](https://discord.com/api/oauth2/authorize?client_id=827863670507438130&permissions=85056&scope=bot%20applications.commands)"
         )
         help_em[0].add_field(
             name='動作サーバー数',
             value=f'{len(self.bot.guilds)}guilds'
         )
         help_em[0].add_field(
-            name='動作環境',
-            value='[Tera-server](https://tera-server.com/)'
-        )
-        help_em[0].add_field(
             name='総ユーザー数',
             value=f'{len(set(self.bot.get_all_members()))}users'
+        )
+        help_em[0].add_field(
+            name='動作環境',
+            value='[Tera-server](https://tera-server.com/)'
         )
         help_em[1].add_field(
             name='`/help`',
             value='このメッセージを送信します'
         )
         help_em[1].add_field(
-            name='`/embed_type`',
+            name='`/embed_type`（未実装）',
             value='展開メッセージの装飾を変更できます\nデフォルトは1です'
         )
         help_em[1].add_field(
