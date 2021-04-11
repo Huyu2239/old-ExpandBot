@@ -33,7 +33,7 @@ class Mybot(commands.Bot):
         with open(f'{self.data_directory}embed_type.json') as f:
             self.emnbed_type = json.load(f)
         self.slash_client = SlashCommand(self, sync_commands=True)
-        self.log_ch_id = 830359131713175572
+        self.log_ch_id = 830233567215747132
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):
