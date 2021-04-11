@@ -17,8 +17,7 @@ class Public(commands.Cog):
 
     @cog_ext.cog_slash(
         name='public',
-        description='サーバー内のメッセージのリンクが他のサーバーに送信された場合の展開の**ON・OFF**を切り替えます',
-        guild_ids=[829431106263580703]
+        description='サーバー外メッセージリンクの展開の**ON・OFF**を切り替えます'
     )
     async def slash_say(self, ctx: SlashContext):
         embed = ''

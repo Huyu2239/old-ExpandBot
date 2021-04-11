@@ -57,12 +57,12 @@ class Help(commands.Cog):
         )
         help_em[1].add_field(
             name='`/public`',
-            value='サーバー内のメッセージのリンクが他のサーバーに送信された場合の展開の**ON・OFF**を切り替えます\n送信元の設定がOFFの場合はリンク先のサーバーの設定がONの場合でも展開**されません**',
+            value='サーバー外メッセージリンクの展開の**ON・OFF**を切り替えます\n送信元の設定がOFFの場合はリンク先のサーバーの設定がONの場合でも展開**されません**',
             inline=False
         )
         return help_em
 
-    @cog_ext.cog_slash(name='help', description='このBotのHelpを返します。', guild_ids=[829431106263580703])
+    @cog_ext.cog_slash(name='help', description='このBotのHelpを返します。')
     async def slash_say(self, ctx: SlashContext):
         # await ctx.respond(eat=True)
         page = 0
