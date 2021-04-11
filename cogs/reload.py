@@ -27,6 +27,7 @@ class Reload(commands.Cog):
                 except commands.ExtensionNotLoaded:
                     self.bot.load_extension(f'cogs.{cog[:-3]}')
         await msg.edit(content='更新しました')
+        print('--------------------------------------------------')
 
 
 def setup(bot):
