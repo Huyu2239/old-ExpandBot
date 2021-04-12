@@ -46,6 +46,8 @@ class Expand(commands.Cog):
         if message.author.bot:
             return
         messages = await self.find_messages(message)
+        if messages is None:
+            return
         for m in messages:
             if m.content:
                 embed_message = await compose_embed(m, message.guild.id)
