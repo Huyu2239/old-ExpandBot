@@ -35,7 +35,10 @@ class Expand(commands.Cog):
 
     async def fetch_message_from_id(self, guild, channel_id, message_id):
         channel = guild.get_channel(channel_id)
-        message = await channel.fetch_message(message_id)
+        try:
+            message = await channel.fetch_message(message_id)
+        except Exception:
+            return
         return message
 
     @commands.Cog.listener()
