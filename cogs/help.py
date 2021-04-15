@@ -1,7 +1,7 @@
 import discord
-from discord.ext import commands  # , tasks
-from discord_slash import SlashContext, cog_ext  # SlashCommand
-# from discord_slash.utils import manage_commands
+from discord.ext import commands
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_option, create_choice
 
 import asyncio
 
@@ -20,7 +20,7 @@ class Help(commands.Cog):
             (
                 discord.Embed(
                     title="概要",
-                    description="Discordのメッセージリンクを展開するBotです。",
+                    description="Discordのメッセージリンクを展開するBotです。\n`/help <commands>`でコマンドの詳細を表示します。",
                     color=discord.Colour.blue()
                 )
             ),
@@ -49,20 +49,38 @@ class Help(commands.Cog):
         )
         help_em[1].add_field(
             name='`/help`',
-            value='このメッセージを送信します'
+            value='このメッセージを送信します。'
         )
         help_em[1].add_field(
-            name='`/embed_type`（未実装）',
-            value='展開メッセージの装飾を変更できます\nデフォルトは1です'
+            name='`/ping`',
+            value='pongを返します。'
         )
         help_em[1].add_field(
-            name='`/public`',
-            value='サーバー外メッセージリンクの展開の**ON・OFF**を切り替えます\n送信元の設定がOFFの場合はリンク先のサーバーの設定がONの場合でも展開**されません**',
-            inline=False
+            name='`/set`',
+            value='展開に関する設定をします。'
+        )
+        help_em[1].add_field(
+            name='`/mute`',
+            value='展開の無効化・有効化します。'
         )
         return help_em
 
-    @cog_ext.cog_slash(name='help', description='このBotのHelpを返します。')
+    @cog_ext.cog_slash(
+        name='help',
+        description='このBotのHelpを返します。',
+        options=[
+            create_option(
+                name="optone",
+                description="This is the first option we have.",
+                option_type=4, required=False,
+                choices=[
+                    create_choice(name="ping", value=1),
+                    create_choice(name="set", value=2),
+                    create_choice(name="mute", value=3)
+                ]
+            )
+        ]
+    )
     async def slash_say(self, ctx: SlashContext):
         # await ctx.respond(eat=True)
         page = 0
