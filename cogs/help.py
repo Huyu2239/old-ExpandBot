@@ -91,7 +91,7 @@ class Help(commands.Cog):
             description="展開に関する設定を行います。(未実装)",
             color=discord.Colour.blue()
         )
-        guild_data = self.bot.guilds.get(ctx.guild.data)
+        guild_data = self.bot.guilds.get(str(ctx.guild.id))
         if guild_data is None:
             guild_data = {}
         set_em.add_field(
