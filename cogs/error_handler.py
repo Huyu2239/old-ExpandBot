@@ -8,6 +8,12 @@ class CommandErrorHandler(commands.Cog):
         self.bot = bot
 
     @commands.Cog.listener()
+    async def on_error(self, ctx, error):
+        orig_error = getattr(error, "original", error)
+        error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+        print(error_str)
+
+    @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
