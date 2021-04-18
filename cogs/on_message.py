@@ -13,11 +13,23 @@ class Expand(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def find_messages(self, message):
+    async def check_mute(self, message):
+        md = self.bot.mute_data
+        if message.guild.id in md.get('guilds'):
+            return True
+        if message.channel.id in md.get('channels'):
+            return True
+        for role in message.author.roles:
+            if role.id in md.get('roles'):
+                return True
+        if message.author.id in md.get('users'):
+            return True
+
+    async def find_messages(self, message):  # message.contentの中から正規表現でURLを抜き出し、メッセージオブジェクトをリストに入れて返す
         messages = []
         for ids in re.finditer(regex_discord_message_url, message.content):
             if message.guild.id != int(ids['guild']):
-                if not await self.check_open(message, int(ids['guild'])):
+                if await self.check_hidden(message, int(ids['guild'])):
                     return
             fetched_message = await self.fetch_message_from_id(
                 guild=self.bot.get_guild(int(ids['guild'])),
@@ -27,11 +39,14 @@ class Expand(commands.Cog):
             messages.append(fetched_message)
         return messages
 
-    async def check_open(self, message, target_guild_id):
+    async def check_hidden(self, message, target_guild_id):
+        return True   # 非公開
+        '''
         if (message.guild.id and target_guild_id) in self.bot.guild_open:
             return True
         else:
             return False
+        '''
 
     async def fetch_message_from_id(self, guild, channel_id, message_id):
         channel = guild.get_channel(channel_id)
@@ -44,6 +59,8 @@ class Expand(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot:
+            return
+        if await self.check_mute(message):
             return
         messages = await self.find_messages(message)
         if messages is None:

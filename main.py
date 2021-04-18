@@ -28,10 +28,15 @@ class Mybot(commands.Bot):
         )
         self.remove_command('help')
         self.data_directory = data_directory
-        with open(f'{self.data_directory}guilds_data.json') as f:
-            self.guilds_data = json.load(f)
         self.slash_client = SlashCommand(self, sync_commands=True)
         self.log_ch_id = 830233567215747132
+        self.json_load()
+
+    def json_load(self):
+        with open(f'{self.data_directory}guilds_data.json') as f:
+            self.guilds_data = json.load(f)
+        with open(f'{self.data_directory}mute_data.json') as f:
+            self.mute_data = json.load(f)
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):

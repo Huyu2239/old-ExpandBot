@@ -9,17 +9,15 @@ else:
 
 
 async def get_embed_type(guild_id):
-    with open(f'{data_directory}embed_type.json') as f:
+    with open(f'{data_directory}guilds_data.json') as f:
         json_dict = json.load(f)
-    num = 0
-    while num < 1:
-        num += 1
-        if guild_id in json_dict.get(str(num)):
-            break
-    else:
-        print('未設定')
-        num = 1
-    return num
+    guild_data = json_dict.get(str(guild_id))
+    if guild_data is None:
+        return 1
+    embed_type = guild_data.get('em_type')
+    if embed_type is None:
+        return 1
+    return embed_type
 
 
 async def compose_embed(message, guild_id):
@@ -40,7 +38,7 @@ async def compose_1(message):
         icon_url=message.author.avatar_url,
     )
     embed.set_footer(
-        text=message.channel.name,
+        text=f'{message.guild.name}|{message.channel.name}|',
         icon_url=message.guild.icon_url,
     )
     if message.attachments and message.attachments[0].proxy_url:
