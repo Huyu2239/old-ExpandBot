@@ -10,6 +10,11 @@ regex_discord_message_url = (
 
 
 class Expand(commands.Cog):
+    '''
+    message: on_messageの引数によるMessageObject
+    msg(msgs): fetchするMessageObject
+    chech_hoge: 当てはまる時にTrue
+    '''
     def __init__(self, bot):
         self.bot = bot
 
@@ -25,30 +30,25 @@ class Expand(commands.Cog):
         if message.author.id in md.get('users'):
             return True
 
-    async def find_messages(self, message):  # message.contentの中から正規表現でURLを抜き出し、メッセージオブジェクトをリストに入れて返す
-        messages = []
+    async def find_msgs(self, message):
+        msgs = []
         for ids in re.finditer(regex_discord_message_url, message.content):
             if message.guild.id != int(ids['guild']):
-                if await self.check_hidden(message, int(ids['guild'])):
-                    return
-            fetched_message = await self.fetch_message_from_id(
+                msg_hidden = await self.check_hidden(message, int(ids['guild']))
+                if msg_hidden is True:
+                    continue
+            fetched_msg = await self.fetch_msg_with_id(
                 guild=self.bot.get_guild(int(ids['guild'])),
                 channel_id=int(ids['channel']),
                 message_id=int(ids['message']),
             )
-            messages.append(fetched_message)
-        return messages
+            msgs.append(fetched_msg)
+        return msgs
 
     async def check_hidden(self, message, target_guild_id):
         return True   # 非公開
-        '''
-        if (message.guild.id and target_guild_id) in self.bot.guild_open:
-            return True
-        else:
-            return False
-        '''
 
-    async def fetch_message_from_id(self, guild, channel_id, message_id):
+    async def fetch_msg_with_id(self, guild, channel_id, message_id):
         channel = guild.get_channel(channel_id)
         try:
             message = await channel.fetch_message(message_id)
@@ -62,16 +62,14 @@ class Expand(commands.Cog):
             return
         if await self.check_mute(message):
             return
-        messages = await self.find_messages(message)
-        if messages is None:
+        msgs = await self.find_msgs(message)
+        if msgs is None:
             return
-        for m in messages:
-            if m.content:
-                embed_message = await compose_embed(m, message.guild.id)
-                if embed_message[1] == 2:  # webhook型
-                    return
+        for msg in msgs:
+            if msg.content:
+                embed_message = await compose_embed(self, msg, message)
                 await message.channel.send(embed=embed_message[0])
-            for embed in m.embeds:
+            for embed in msg.embeds:
                 await message.channel.send(embed=embed)
 
 
