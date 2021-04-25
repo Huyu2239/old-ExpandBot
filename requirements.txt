@@ -2,4 +2,3 @@ discord.py[voice]
 discord-py-slash-command
 python-dotenv
 GitPython
-importlib
