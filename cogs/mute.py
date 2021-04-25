@@ -103,7 +103,7 @@ class Mute(commands.Cog):
 
         embed = discord.Embed(title='設定完了', description=msg, color=discord.Colour.blue())
         await ctx.send(embed=embed)
-        await libs.database.Database.write_mute_data(self)
+        await libs.database.Database.write_mute_data(self.bot)
 
 
 def setup(bot):
