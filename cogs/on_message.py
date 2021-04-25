@@ -97,7 +97,8 @@ class Expand(commands.Cog):
                         filed_attachment = await attachment.to_file()
                         files.append(filed_attachment)
             await message.channel.send(embed=embed_em[0])
-            await message.channel.send(files=files)
+            if len(files) != 0:
+                await message.channel.send(files=files)
             for embed in msg.embeds:
                 await message.channel.send(embed=embed)
 
