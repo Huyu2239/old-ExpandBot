@@ -94,7 +94,7 @@ class Expand(commands.Cog):
                             url=attachment.proxy_url
                         )
                     else:
-                        filed_attachment = attachment.to_file()
+                        filed_attachment = await attachment.to_file()
                         files.append(filed_attachment)
             await message.channel.send(embed=embed_em[0])
             await message.channel.send(files=files)
