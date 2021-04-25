@@ -62,8 +62,4 @@ class Embed_ctrl:
             text=f'@{names["guild_name"]} | #{names["channel_name"]} | Quoted by {str(message.author)}',
             icon_url=names["guild_icon"],
         )
-        if msg.attachments and msg.attachments[0].proxy_url:
-            embed.set_image(
-                url=msg.attachments[0].proxy_url
-            )
         return embed

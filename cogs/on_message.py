@@ -85,17 +85,19 @@ class Expand(commands.Cog):
         if msgs is None:
             return
         for msg in msgs:
-            embed_m = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
-            await message.channel.send(embed=embed_m[0])
-            if len(msg.attachments) > 1:
-                msg.attachments.pop(0)
-                for pic in msg.attachments:
-                    if pic.proxy_url:
-                        pic_em = discord.Embed()
-                        pic_em.set_image(
-                            url=pic.proxy_url
+            files = []
+            embed_em = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
+            if len(msg.attachments) > 0:
+                for attachment in msg.attachments:
+                    if attachment.content_type == 'image' and embed_em[0].image is None:
+                        embed_em[0].set_image(
+                            url=attachment.proxy_url
                         )
-                    await message.channel.send(embed=pic_em)
+                    else:
+                        filed_attachment = attachment.to_file()
+                        files.append(filed_attachment)
+            await message.channel.send(embed=embed_em[0])
+            await message.channel.send(files=files)
             for embed in msg.embeds:
                 await message.channel.send(embed=embed)
 
