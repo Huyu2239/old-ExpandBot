@@ -4,8 +4,9 @@ from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_option, create_choice
 
 import asyncio
+import importlib
 
-from lib.database import Database
+import libs.database
 
 
 class Mute(commands.Cog):
@@ -15,6 +16,9 @@ class Mute(commands.Cog):
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
+
+    def reload_libs(self):
+        importlib.reload(libs.database)
 
     async def set_guild_mute(self, ctx):
         mute_guilds = self.bot.mute_data.get('guilds')
@@ -100,7 +104,7 @@ class Mute(commands.Cog):
 
         embed = discord.Embed(title='設定完了', description=msg, color=discord.Colour.blue())
         await ctx.send(embed=embed)
-        await Database.write_mute_data(self)
+        await libs.database.Database.write_mute_data(self)
 
 
 def setup(bot):

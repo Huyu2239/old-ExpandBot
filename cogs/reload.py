@@ -11,12 +11,16 @@ class Reload(commands.Cog):
         return await self.bot.is_owner(ctx.author)
 
     @commands.command()
-    async def reload(self, ctx, _json=None):
+    async def reload(self, ctx, path=None):
         msg = await ctx.send('更新中')
-        if _json == 'full':
+
+        if path == 'full' or 'lib':
+            self.bot.get_cog('Expand').reload_libs()
+            self.bot.get_cog('Mute').reload_libs()
+        if path == 'full' or 'json':
             with open(f'{self.bot.data_directory}guilds_data.json') as f:
                 self.bot.guild_open = json.load(f)
-            with open(f'{self.data_directory}mute_data.json') as f:
+            with open(f'{self.bot.data_directory}mute_data.json') as f:
                 self.bot.embed_type = json.load(f)
         for cog in os.listdir('./cogs'):
             if cog.endswith('.py'):

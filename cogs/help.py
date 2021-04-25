@@ -11,7 +11,6 @@ class Help(commands.Cog):
         self.bot = bot
         asyncio.create_task(self.bot.slash.sync_all_commands())
         self.help_em = self.compose_help_em()
-        self.com_em = self.compose_com_em()
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
@@ -66,7 +65,7 @@ class Help(commands.Cog):
         )
         return help_em
 
-    def compose_com_em(self):
+    async def compose_com_em(self, ctx):
         com_em = [
             (
                 discord.Embed(
@@ -83,6 +82,21 @@ class Help(commands.Cog):
                 )
             )
         ]
+        if ctx.guild.id in self.bot.mute_data.get('guilds'):
+            server_mute = True
+        else:
+            server_mute = False
+        if ctx.author.id in self.bot.mute_data.get('users'):
+            user_mute = True
+        else:
+            user_mute = False
+        com_em[1].add_field(
+            name='`現在の設定`',
+            value=f'```\nserver_mute={server_mute}\n```\n'
+                  '```\nchannel_mute=False\n```\n'
+                  '```\nrole_mute=False\n```\n'
+                  f'```\nuser_mute={user_mute}\n```\n'
+        )
         return com_em
 
     async def compose_set_em(self, ctx):
@@ -159,12 +173,14 @@ class Help(commands.Cog):
                 await help_msg.edit(embed=self.help_em[page])
             return
         elif com == 1:
-            await ctx.send(embed=self.com_em[0])
+            com_em = await self.compose_com_em(ctx)
+            await ctx.send(embed=com_em[0])
         elif com == 2:
             set_em = await self.compose_set_em(ctx)
             await ctx.send(embed=set_em)
         elif com == 3:
-            await ctx.send(embed=self.com_em[1])
+            com_em = await self.compose_com_em(ctx)
+            await ctx.send(embed=com_em[1])
 
 
 def setup(bot):
