@@ -1,5 +1,5 @@
-from discord.ext import commands
 import git
+from discord.ext import commands
 
 
 class Git(commands.Cog):

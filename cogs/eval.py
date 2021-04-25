@@ -1,10 +1,11 @@
-from discord.ext import commands
 import asyncio
-import traceback
 import io
 import subprocess
 import textwrap
+import traceback
 from contextlib import redirect_stdout
+
+from discord.ext import commands
 
 
 def cleanup_code(content):

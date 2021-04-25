@@ -1,6 +1,7 @@
-from discord.ext import commands
 import json
 import os
+
+from discord.ext import commands
 
 
 class Reload(commands.Cog):

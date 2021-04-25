@@ -1,5 +1,6 @@
-from discord import Embed
 import os
+
+from discord import Embed
 
 if os.name == 'nt':
     data_directory = 'json\\'

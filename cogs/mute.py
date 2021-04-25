@@ -1,12 +1,11 @@
-import discord
-from discord.ext import commands
-from discord_slash import SlashContext, cog_ext
-from discord_slash.utils.manage_commands import create_option, create_choice
-
 import asyncio
 import importlib
 
+import discord
 import libs.database
+from discord.ext import commands
+from discord_slash import SlashContext, cog_ext
+from discord_slash.utils.manage_commands import create_choice, create_option
 
 
 class Mute(commands.Cog):

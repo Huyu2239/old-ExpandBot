@@ -1,9 +1,9 @@
-import discord
-from discord.ext import commands
-import re
 import importlib
+import re
 
+import discord
 import libs.embed
+from discord.ext import commands
 
 regex_discord_message_url = (
     'https://(ptb.|canary.)?discord(app)?.com/channels/'
