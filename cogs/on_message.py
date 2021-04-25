@@ -26,8 +26,9 @@ class Expand(commands.Cog):
 
     async def check_mute(self, message):
         md = self.bot.mute_data
-        if message.guild.id in md.get('guilds'):
-            return True
+        if message.guild:
+            if message.guild.id in md.get('guilds'):
+                return True
         if message.channel.id in md.get('channels'):
             return True
         for role in message.author.roles:
