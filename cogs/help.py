@@ -77,7 +77,7 @@ class Help(commands.Cog):
             (
                 discord.Embed(
                     title="mute",
-                    description="展開の無効化・有効化をします。(未実装)",
+                    description="展開の無効化・有効化をします。",
                     color=discord.Colour.blue()
                 )
             )

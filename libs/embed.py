@@ -1,18 +1,11 @@
-import os
-
 from discord import Embed
-
-if os.name == 'nt':
-    data_directory = 'json\\'
-else:
-    data_directory = 'json/'
+import database.Database as Database
 
 
 class Embed_ctrl:
     async def compose_embed(bot, msg, message):
-        embed = ''
         names = await Embed_ctrl.get_names(bot, msg, message)
-        embed_type = await Embed_ctrl.get_embed_type(bot, message.guild.id)
+        embed_type = await Embed_ctrl.get_embed_type(bot, message)
         if embed_type == 1:
             embed = await Embed_ctrl.compose_1(msg, message, names)
         return embed, embed_type
@@ -34,20 +27,27 @@ class Embed_ctrl:
             if self.bot.channels_data.get(str(msg.channel.id)).get('') is True:
                 names["channel_name"] = '匿名チャンネル'
         if self.bot.guilds_data.get(str(msg.guild.id)):
-            ifself.bot.guilds_data.get(str(msg.guild.id)).get('') is True:
+            if self.bot.guilds_data.get(str(msg.guild.id)).get('') is True:
                 names["guild_name"] = '匿名サーバー'
                 names['guild_icon'] = 初期アイコン
         '''
         return names
 
-    async def get_embed_type(bot, guild_id):
-        guild_data = bot.guilds_data.get(str(guild_id))
-        if guild_data is None:
+    async def get_embed_type(bot, message):
+        '''
+        user_data = bot.users_data.get(str(message.author.id))
+        if user_data:
+            return user_data.get('embed_type')
+        channel_data = bot.channels_data.get(str(message.channel.id))
+        if channel_data:
+            return channel_data.get('embed_type')
+        '''
+        guild_data = bot.guilds_data.get(str(message.guild.id))
+        if guild_data:
+            return guild_data.get('embed_type')
+        else:
+            await Database.write_new_data(bot.guilds_data, message.guild.id)
             return 1
-        embed_type = guild_data.get('em_type')
-        if embed_type is None:
-            return 1
-        return embed_type
 
     async def compose_1(msg, message, names):
         embed = Embed(
