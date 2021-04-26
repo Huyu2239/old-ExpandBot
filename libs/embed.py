@@ -1,5 +1,5 @@
 from discord import Embed
-import libs.database.Database as Database
+import database
 
 
 class Embed_ctrl:
@@ -46,7 +46,7 @@ class Embed_ctrl:
         if guild_data:
             return guild_data.get('embed_type')
         else:
-            await Database.write_new_data(bot.guilds_data, message.guild.id)
+            await database.Database.write_new_data(bot.guilds_data, message.guild.id)
             return 1
 
     async def compose_1(msg, message, names):
