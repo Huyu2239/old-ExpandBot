@@ -23,10 +23,10 @@ class Mute(commands.Cog):
         mute_guilds = self.bot.mute_data.get('guilds')
         if ctx.guild.id in mute_guilds:
             mute_guilds.remove(ctx.guild.id)
-            return 'サーバーの展開をOFFにしました'
+            return 'サーバーの展開をONにしました'
         else:
             mute_guilds.append(ctx.guild.id)
-            return 'サーバーの展開をONにしました'
+            return 'サーバーの展開をOFFにしました'
 
     async def set_channel_mute(self, value, ctx):
         item = int()
@@ -103,7 +103,7 @@ class Mute(commands.Cog):
 
         embed = discord.Embed(title='設定完了', description=msg, color=discord.Colour.blue())
         await ctx.send(embed=embed)
-        await libs.database.Database.write_mute_data(self)
+        await libs.database.Database.write_mute_data(self.bot)
 
 
 def setup(bot):

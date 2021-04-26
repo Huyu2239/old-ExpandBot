@@ -146,8 +146,8 @@ class Help(commands.Cog):
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, com=None):
-        if com is None:
+    async def slash_say(self, ctx: SlashContext, command=None):
+        if command is None:
             # await ctx.respond(eat=True)
             page = 0
             help_msg = await ctx.send(embed=self.help_em[page])
@@ -172,13 +172,13 @@ class Help(commands.Cog):
                     page += 1
                 await help_msg.edit(embed=self.help_em[page])
             return
-        elif com == 1:
+        elif command == 1:
             com_em = await self.compose_com_em(ctx)
             await ctx.send(embed=com_em[0])
-        elif com == 2:
+        elif command == 2:
             set_em = await self.compose_set_em(ctx)
             await ctx.send(embed=set_em)
-        elif com == 3:
+        elif command == 3:
             com_em = await self.compose_com_em(ctx)
             await ctx.send(embed=com_em[1])
 
