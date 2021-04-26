@@ -1,5 +1,5 @@
 from discord import Embed
-import database.Database as Database
+import libs.database.Database as Database
 
 
 class Embed_ctrl:
