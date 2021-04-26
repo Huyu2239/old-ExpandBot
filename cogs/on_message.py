@@ -87,19 +87,16 @@ class Expand(commands.Cog):
         for msg in msgs:
             files = []
             embed_em = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
-            if len(msg.attachments) > 0:
-                for attachment in msg.attachments:
-                    print(embed_em[0].image)
-                    if 'image' in attachment.content_type and embed_em[0].image == 'EmbedProxy()':
-                        embed_em[0].set_image(
-                            url=attachment.proxy_url
-                        )
-                    else:
-                        filed_attachment = await attachment.to_file()
-                        files.append(filed_attachment)
             await message.channel.send(embed=embed_em[0])
-            if len(files) > 0:
-                await message.channel.send(files=files)
+            if len(msg.attachments) >= 2:
+                # atm_em = attachment_embed
+                msg.attachments.pop(0)
+                for attachment in msg.attachments:
+                    atm_em = Embed()
+                    atm_em.set_image(
+                        url=attachment.proxy_url
+                    )
+                    await message.channel.send(embed=atm_em)
             for embed in msg.embeds:
                 await message.channel.send(embed=embed)
 

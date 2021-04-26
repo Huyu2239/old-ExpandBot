@@ -1,5 +1,4 @@
 from discord import Embed
-import database
 
 
 class Embed_ctrl:
@@ -46,7 +45,6 @@ class Embed_ctrl:
         if guild_data:
             return guild_data.get('embed_type')
         else:
-            await database.Database.write_new_data(bot.guilds_data, message.guild.id)
             return 1
 
     async def compose_1(msg, message, names):
@@ -62,4 +60,8 @@ class Embed_ctrl:
             text=f'@{names["guild_name"]} | #{names["channel_name"]} | Quoted by {str(message.author)}',
             icon_url=names["guild_icon"],
         )
+        if msg.attachments and msg.attachments[0].proxy_url:
+            embed.set_image(
+                url=msg.attachments[0].proxy_url
+            )
         return embed
