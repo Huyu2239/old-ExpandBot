@@ -15,14 +15,6 @@ class Reload(commands.Cog):
     async def reload(self, ctx, path=None):
         msg = await ctx.send('更新中')
 
-        if path == 'full' or 'lib':
-            self.bot.get_cog('Expand').reload_libs()
-            self.bot.get_cog('Mute').reload_libs()
-        if path == 'full' or 'json':
-            with open(f'{self.bot.data_directory}guilds_data.json') as f:
-                self.bot.guild_open = json.load(f)
-            with open(f'{self.bot.data_directory}mute_data.json') as f:
-                self.bot.embed_type = json.load(f)
         for cog in os.listdir('./cogs'):
             if cog.endswith('.py'):
                 if cog == 'reload.py':
@@ -35,6 +27,15 @@ class Reload(commands.Cog):
                     self.bot.load_extension(f'cogs.{cog[:-3]}')
                 except commands.ExtensionAlreadyLoaded:
                     self.bot.reload_extension(f'cogs.{cog[:-3]}')
+        if path == 'full' or 'lib':
+            self.bot.get_cog('Expand').reload_libs()
+            self.bot.get_cog('Mute').reload_libs()
+        if path == 'full' or 'json':
+            with open(f'{self.bot.data_directory}guilds_data.json') as f:
+                self.bot.guild_open = json.load(f)
+            with open(f'{self.bot.data_directory}mute_data.json') as f:
+                self.bot.embed_type = json.load(f)
+
         await msg.edit(content='更新しました')
         print('--------------------------------------------------')
 

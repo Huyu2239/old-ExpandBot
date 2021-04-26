@@ -1,5 +1,6 @@
 env
 .env
 __pycache__
-embed_type.json
-guild_open.json
+*.json
+!sample_set_data.json
+!sample_mute_data.json
