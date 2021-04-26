@@ -89,7 +89,7 @@ class Expand(commands.Cog):
             embed_em = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
             if len(msg.attachments) > 0:
                 for attachment in msg.attachments:
-                    print(attachment.content_type)
+                    print(embed_em[0].image)
                     if 'image' in attachment.content_type and embed_em[0].image is None:
                         embed_em[0].set_image(
                             url=attachment.proxy_url
