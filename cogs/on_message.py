@@ -90,7 +90,7 @@ class Expand(commands.Cog):
             if len(msg.attachments) > 0:
                 for attachment in msg.attachments:
                     print(embed_em[0].image)
-                    if 'image' in attachment.content_type and embed_em[0].image is None:
+                    if 'image' in attachment.content_type and embed_em[0].image == 'EmbedProxy()':
                         embed_em[0].set_image(
                             url=attachment.proxy_url
                         )
