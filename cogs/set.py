@@ -29,11 +29,6 @@ class Set(commands.Cog):
                 ]
             ),
             create_option(
-                name="channel",
-                description="別チャンネルの設定をする場合は、そのチャンネルを指定してください。(未入力の場合は送信したチャンネル)",
-                option_type=7, required=False
-            ),
-            create_option(
                 name="topic",
                 description="設定する項目を選択してください。",
                 option_type=4, required=True,
@@ -43,6 +38,11 @@ class Set(commands.Cog):
                     create_choice(name="embed_type", value=3),
                     create_choice(name="embed_color", value=4)
                 ]
+            ),
+            create_option(
+                name="channel",
+                description="別チャンネルの設定をする場合は、そのチャンネルを指定してください。(未入力の場合は送信したチャンネル)",
+                option_type=7, required=False
             ),
             create_option(
                 name="embed_type",
