@@ -18,7 +18,7 @@ class Database:
         return mute_data, guilds_data
 
     async def write_all_data(bot):
-        await Database.write_mute_data(bot)
+        await Database.write_mute_data(Database, bot)
         await Database.write_guilds_data(bot)
 
     async def get_mute_data(bot):
