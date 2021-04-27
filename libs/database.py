@@ -18,8 +18,8 @@ class Database:
         return mute_data, guilds_data
 
     async def write_all_data(bot):
-        await Database.write_mute_data()
-        await Database.write_guilds_data()
+        await Database.write_mute_data(bot)
+        await Database.write_guilds_data(bot)
 
     async def get_mute_data(bot):
         with open(f'{bot.data_directory}mute_data.json') as f:
