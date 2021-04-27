@@ -59,7 +59,7 @@ class Set(commands.Cog):
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, topic, embed_type=None, embed_color=None, channel=None, ):
+    async def slash_say(self, ctx: SlashContext, target, topic, embed_type=None, embed_color=None, channel=None):
         # 設定するdictを汎用化
         if target == 1:
             data = self.bot.guilds_data
