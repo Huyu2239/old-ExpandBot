@@ -63,19 +63,23 @@ class Set(commands.Cog):
         # 設定するdictを汎用化
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
+            target_name = f'on {ctx.guild.name}'
         if target == 2:
             pass
             '''
-            data = self.bot.channels_data
             if channel:
-                target_id = channel.id
+                target_dict = self.bot.channels_data.get(str(channel.id))
+                target_name = f'on <#{channel.id}>'
             else:
-                target_id = ctx.channel.id
+                target_dict = self.bot.channels_data.get(str(ctx.channel.id))
+                target_name = f'on <#{ctx.channel.id}>'
             '''
         if target == 3:
             pass
-            # data=self.bot.users_data
-            # target_id = ctx.author.id
+            '''
+            target_dict = self.bot.users_data.get(str(ctx.author.id))
+            target_name = f'on <@{ctx.author.id}>'
+            '''
         if target_dict is None:
             if target == 1:
                 pass  # guilds_data
@@ -87,30 +91,32 @@ class Set(commands.Cog):
 
         # dictの上書き
         if topic == 1:
-            if target_dict.get('hidden') is (False or None):
+            if target_dict.get('hidden') is False:
                 target_dict['hidden'] = True
             else:
                 target_dict['hidden'] = False
             msg = f'hidden={target_dict.get("hidden")}'
         if topic == 2:
-            if target_dict.get('hidden') is (False or None):
+            if target_dict.get('hidden') is False:
                 target_dict['hidden'] = True
             else:
                 target_dict['hidden'] = False
             msg = f'hidden={target_dict.get("hidden")}'
         if topic == 3:
             if embed_type is None:
-                msg = 'embedのtypeを指定してください。'
+                embed = discord.Embed(title='ERROR', description='embed_typeが指定されていません。', color=discord.Colour.red())
+                return await ctx.send(embed=embed)
             target_dict['embed_type'] = embed_type
             msg = f'embed_type={embed_type}'
         if topic == 4:
             if embed_color is None:
-                msg = 'embedのtypeを指定してください。'
+                embed = discord.Embed(title='ERROR', description='embed_colorが指定されていません。', color=discord.Colour.red())
+                return await ctx.send(embed=embed)
             target_dict['embed_color'] = embed_color
             msg = f'embed_color={embed_color}'
 
         # レスポンス
-        embed = discord.Embed(title='設定完了', description=msg, color=discord.Colour.blue())
+        embed = discord.Embed(title='設定完了', description=f'{target_name}\n```\n{msg}\n```', color=discord.Colour.blue())
         await ctx.send(embed=embed)
         await libs.database.Database.write_all_data(self.bot)
 
