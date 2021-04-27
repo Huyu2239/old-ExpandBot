@@ -18,7 +18,7 @@ class Set(commands.Cog):
         embed = discord.Embed(title='設定完了')
         embed.add_field(
             name=msg,
-            value=f'```\nhidden={target_dict.get("hidden")}\n```\n'z
+            value=f'```\nhidden={target_dict.get("hidden")}\n```\n'
                   f'```\nanonymous={target_dict.get("anonymous")}\n```\n'
                   f'```\nembed_type={target_dict.get("embed_type")}\n```\n'
                   f'```\nembed_color={target_dict.get("embed_color")}\n```\n'
