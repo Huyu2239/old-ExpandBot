@@ -23,6 +23,7 @@ class Set(commands.Cog):
                   f'```\nembed_type={target_dict.get("embed_type")}\n```\n'
                   f'```\nembed_color={target_dict.get("embed_color")}\n```\n'
         )
+        return embed
 
     @cog_ext.cog_slash(
         name='set',
