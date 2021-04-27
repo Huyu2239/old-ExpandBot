@@ -5,7 +5,7 @@ class Database:
     async def write_new_data(target_dict: dict, target_id):
         tmp_set = {
             'hidden': True,
-            'anonimity': True,
+            'anonymous': True,
             'embed_type': 1,
             'embed_color': 0,
             'allow': []
