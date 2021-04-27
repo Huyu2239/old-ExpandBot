@@ -14,6 +14,16 @@ class Set(commands.Cog):
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
+    async def compose_setting_em(self, target_dict, msg):
+        embed = discord.Embed(title='設定完了')
+        embed.add_field(
+            name=msg,
+            value=f'```\nhidden={target_dict.get("hidden")}\n```\n'z
+                  f'```\nanonymous={target_dict.get("anonymous")}\n```\n'
+                  f'```\nembed_type={target_dict.get("embed_type")}\n```\n'
+                  f'```\nembed_color={target_dict.get("embed_color")}\n```\n'
+        )
+
     @cog_ext.cog_slash(
         name='set',
         description='展開に関する設定を行います。',
@@ -34,7 +44,7 @@ class Set(commands.Cog):
                 option_type=4, required=True,
                 choices=[
                     create_choice(name="hidden", value=1),
-                    create_choice(name="anonimity", value=2),
+                    create_choice(name="anonymous", value=2),
                     create_choice(name="embed_type", value=3),
                     create_choice(name="embed_color", value=4)
                 ]
@@ -64,29 +74,30 @@ class Set(commands.Cog):
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             target_name = f'on {ctx.guild.name}'
+        '''
         if target == 2:
-            pass
-            '''
             if channel:
                 target_dict = self.bot.channels_data.get(str(channel.id))
                 target_name = f'on <#{channel.id}>'
             else:
                 target_dict = self.bot.channels_data.get(str(ctx.channel.id))
                 target_name = f'on <#{ctx.channel.id}>'
-            '''
         if target == 3:
             pass
-            '''
             target_dict = self.bot.users_data.get(str(ctx.author.id))
             target_name = f'on <@{ctx.author.id}>'
-            '''
+        '''
         if target_dict is None:
             if target == 1:
-                pass  # guilds_data
+                target_dict = await libs.database.Database.write_new_data(self.bot.guilds_data, ctx.guild.id)  # guilds_data
+            else:
+                return
+            '''
             if target == 2:
-                pass  # channels_data
+                await libs.database.Database.write_new_data(self.bot.guilds_data)  # channels_data
             if target == 3:
-                pass  # users_data
+                await libs.database.Database.write_new_data(self.bot.guilds_data)  # users_data
+            '''
             # databaseでtmpを書き込み
 
         # dictの上書き
@@ -97,11 +108,11 @@ class Set(commands.Cog):
                 target_dict['hidden'] = False
             msg = f'hidden={target_dict.get("hidden")}'
         if topic == 2:
-            if target_dict.get('hidden') is False:
-                target_dict['hidden'] = True
+            if target_dict.get('anonymous') is False:
+                target_dict['anonymous'] = True
             else:
-                target_dict['hidden'] = False
-            msg = f'hidden={target_dict.get("hidden")}'
+                target_dict['anonymous'] = False
+            msg = f'anonymous={target_dict.get("anonymous")}'
         if topic == 3:
             if embed_type is None:
                 embed = discord.Embed(title='ERROR', description='embed_typeが指定されていません。', color=discord.Colour.red())
@@ -116,7 +127,7 @@ class Set(commands.Cog):
             msg = f'embed_color={embed_color}'
 
         # レスポンス
-        embed = discord.Embed(title='設定完了', description=f'{target_name}\n```\n{msg}\n```', color=discord.Colour.blue())
+        embed = await self.compose_setting_em(target_dict, msg)
         await ctx.send(embed=embed)
         await libs.database.Database.write_all_data(self.bot)
 

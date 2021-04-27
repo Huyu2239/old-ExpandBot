@@ -11,6 +11,7 @@ class Database:
             'allow': []
         }
         target_dict[str(target_id)] = tmp_set
+        return target_dict.get(str(target_id))
 
     async def get_all_data(bot):
         mute_data = await Database.get_mute_data(bot)

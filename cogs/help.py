@@ -116,7 +116,7 @@ class Help(commands.Cog):
         set_em.add_field(
             name='`anonymity`',
             value='メッセージのリンクがサーバー外で送信された際に、\nユーザー名を保護して表示しないように設定できます。\n'
-                  f'```\nanonymity={guild_data.get("anonymity")}\n```\n'
+                  f'```\nanonymity={guild_data.get("anonymous")}\n```\n'
         )
         set_em.add_field(
             name='`embed_type`',
