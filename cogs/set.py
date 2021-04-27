@@ -62,8 +62,7 @@ class Set(commands.Cog):
     async def slash_say(self, ctx: SlashContext, target, topic, embed_type=None, embed_color=None, channel=None, ):
         # 設定するdictを汎用化
         if target == 1:
-            data = self.bot.guilds_data
-            target_id = ctx.guild.id
+            target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
         if target == 2:
             pass
             '''
@@ -77,10 +76,14 @@ class Set(commands.Cog):
             pass
             # data=self.bot.users_data
             # target_id = ctx.author.id
-        target_dict = data.get(str(target_id))
         if target_dict is None:
-            data[str(target_id)] = {}
-            target_dict = data.get(str(target_id))
+            if target == 1:
+                pass  # guilds_data
+            if target == 2:
+                pass  # channels_data
+            if target == 3:
+                pass  # users_data
+            # databaseでtmpを書き込み
 
         # dictの上書き
         if topic == 1:
@@ -97,13 +100,11 @@ class Set(commands.Cog):
             msg = f'hidden={target_dict.get("hidden")}'
         if topic == 3:
             if embed_type is None:
-                pass
                 msg = 'embedのtypeを指定してください。'
             target_dict['embed_type'] = embed_type
             msg = f'embed_type={embed_type}'
         if topic == 4:
             if embed_color is None:
-                pass
                 msg = 'embedのtypeを指定してください。'
             target_dict['embed_color'] = embed_color
             msg = f'embed_color={embed_color}'
