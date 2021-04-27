@@ -15,7 +15,7 @@ class Set(commands.Cog):
         self.bot.slash.remove_cog_commands(self)
 
     async def compose_setting_em(self, target_dict, target_name):
-        embed = discord.Embed(description='設定完了')
+        embed = discord.Embed(title='設定完了')
         embed.add_field(
             name=target_name,
             value=f'```\nhidden={target_dict.get("hidden")}\n```\n'
