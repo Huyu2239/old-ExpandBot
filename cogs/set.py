@@ -14,10 +14,10 @@ class Set(commands.Cog):
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
-    async def compose_setting_em(self, target_dict, msg):
-        embed = discord.Embed(title='設定完了')
+    async def compose_setting_em(self, target_dict, target_name):
+        embed = discord.Embed(description='設定完了')
         embed.add_field(
-            name=msg,
+            name=target_name,
             value=f'```\nhidden={target_dict.get("hidden")}\n```\n'
                   f'```\nanonymous={target_dict.get("anonymous")}\n```\n'
                   f'```\nembed_type={target_dict.get("embed_type")}\n```\n'
@@ -106,28 +106,24 @@ class Set(commands.Cog):
                 target_dict['hidden'] = True
             else:
                 target_dict['hidden'] = False
-            msg = f'hidden={target_dict.get("hidden")}'
         if topic == 2:
             if target_dict.get('anonymous') is False:
                 target_dict['anonymous'] = True
             else:
                 target_dict['anonymous'] = False
-            msg = f'anonymous={target_dict.get("anonymous")}'
         if topic == 3:
             if embed_type is None:
                 embed = discord.Embed(title='ERROR', description='embed_typeが指定されていません。', color=discord.Colour.red())
                 return await ctx.send(embed=embed)
             target_dict['embed_type'] = embed_type
-            msg = f'embed_type={embed_type}'
         if topic == 4:
             if embed_color is None:
                 embed = discord.Embed(title='ERROR', description='embed_colorが指定されていません。', color=discord.Colour.red())
                 return await ctx.send(embed=embed)
             target_dict['embed_color'] = embed_color
-            msg = f'embed_color={embed_color}'
 
         # レスポンス
-        embed = await self.compose_setting_em(target_dict, msg)
+        embed = await self.compose_setting_em(target_dict, target_name)
         await ctx.send(embed=embed)
         await libs.database.Database.write_all_data(self.bot)
 
