@@ -13,13 +13,13 @@ class Database:
         target_dict[str(target_id)] = tmp_set
 
     async def get_all_data(bot):
-        mute_data = await Database.get_mute_data()
-        guilds_data = await Database.get_guilds_data()
+        mute_data = await Database.get_mute_data(bot)
+        guilds_data = await Database.get_guilds_data(bot)
         return mute_data, guilds_data
 
     async def write_all_data(bot):
-        await Database.write_mute_data()
-        await Database.write_guilds_data()
+        await Database.write_mute_data(bot=bot)
+        await Database.write_guilds_data(bot)
 
     async def get_mute_data(bot):
         with open(f'{bot.data_directory}mute_data.json') as f:

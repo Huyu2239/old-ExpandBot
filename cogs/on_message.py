@@ -90,9 +90,8 @@ class Expand(commands.Cog):
             await message.channel.send(embed=embed_em[0])
             if len(msg.attachments) >= 2:
                 # atm_em = attachment_embed
-                msg.attachments.pop(0)
-                for attachment in msg.attachments:
-                    atm_em = Embed()
+                for attachment in msg.attachments[1:]:
+                    atm_em = diiscord.Embed()
                     atm_em.set_image(
                         url=attachment.proxy_url
                     )
