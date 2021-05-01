@@ -26,16 +26,16 @@ class Expand(commands.Cog):
 
     async def check_mute(self, message):
         md = self.bot.mute_data
-        if message.guild:
-            if message.guild.id in md.get('guilds'):
-                return True
-        if message.channel.id in md.get('channels'):
+        if message.author.id in md.get('users'):
             return True
         for role in message.author.roles:
             if role.id in md.get('roles'):
                 return True
-        if message.author.id in md.get('users'):
+        if message.channel.id in md.get('channels'):
             return True
+        if message.guild:
+            if message.guild.id in md.get('guilds'):
+                return True
 
     async def find_msgs(self, message):
         msgs = list()
