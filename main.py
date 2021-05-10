@@ -17,7 +17,7 @@ class Mybot(commands.Bot):
     def __init__(self, command_prefix, **options):
         self.command_prefix = command_prefix
         prefix = commands.when_mentioned_or(command_prefix)
-        allowed_mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)  # 個人のメンションのみ反応
+        allowed_mentions = discord.AllowedMentions(everyone=False, roles=False, users=True)
         intents = discord.Intents.all()
         super().__init__(
             command_prefix=prefix,
@@ -28,14 +28,15 @@ class Mybot(commands.Bot):
         self.remove_command('help')
         self.data_directory = data_directory
         self.slash_client = SlashCommand(self, sync_commands=True)
-        self.log_ch_id = 830233567215747132
-        self.json_load()
+        self.log_ch_id = 830359131713175572
+        self.mute_data = {
+            "guilds": [],
+            "channels": [],
+            "roles": [],
+            "users": []
+        }
+        self.guilds_data = {}
 
-    def json_load(self):
-        with open(f'{self.data_directory}guilds_data.json') as f:
-            self.guilds_data = json.load(f)
-        with open(f'{self.data_directory}mute_data.json') as f:
-            self.mute_data = json.load(f)
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):

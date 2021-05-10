@@ -24,19 +24,6 @@ class Expand(commands.Cog):
     def reload_libs(self):
         importlib.reload(libs.embed)
 
-    async def check_mute(self, message):
-        md = self.bot.mute_data
-        if message.author.id in md.get('users'):
-            return True
-        for role in message.author.roles:
-            if role.id in md.get('roles'):
-                return True
-        if message.channel.id in md.get('channels'):
-            return True
-        if message.guild:
-            if message.guild.id in md.get('guilds'):
-                return True
-
     async def find_msgs(self, message):
         msgs = list()
         for ids in re.finditer(regex_discord_message_url, message.content):
@@ -56,17 +43,6 @@ class Expand(commands.Cog):
             msgs.append(msg)
         return msgs
 
-    async def check_hidden(self, m):
-        # サーバー設定
-        if self.bot.guilds_data.get(str(m.guild.id)) is None:
-            return True
-        if self.bot.guilds_data.get(str(m.guild.id)).get("hidden") is True:
-            return True
-        '''
-        # チャンネル設定
-        # ユーザー設定
-        '''
-
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
         try:
@@ -77,10 +53,11 @@ class Expand(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot:
+        if message.author.bot or message.guild is None:
             return
         if await self.check_mute(message):
             return
+
         msgs = await self.find_msgs(message)
         if msgs is None:
             return
@@ -89,13 +66,13 @@ class Expand(commands.Cog):
             embed_em = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
             await message.channel.send(embed=embed_em[0])
             if len(msg.attachments) >= 2:
-                # atm_em = attachment_embed
+                # Send the second and subsequent attachments with embed (named 'embed') respectively:
                 for attachment in msg.attachments[1:]:
-                    atm_em = diiscord.Embed()
-                    atm_em.set_image(
+                    embed = discord.Embed()
+                    embed.set_image(
                         url=attachment.proxy_url
                     )
-                    await message.channel.send(embed=atm_em)
+                    await message.channel.send(embed=embed)
             for embed in msg.embeds:
                 await message.channel.send(embed=embed)
 
