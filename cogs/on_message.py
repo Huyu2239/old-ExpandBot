@@ -3,6 +3,7 @@ import re
 
 import discord
 import libs.embed
+import libs.check
 from discord.ext import commands
 
 regex_discord_message_url = (
@@ -23,6 +24,7 @@ class Expand(commands.Cog):
 
     def reload_libs(self):
         importlib.reload(libs.embed)
+        importlib.reload(libs.check)
 
     async def find_msgs(self, message):
         msgs = list()
@@ -55,7 +57,7 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        if await self.check_mute(message):
+        if await libs.check.check_mute(message):
             return
 
         msgs = await self.find_msgs(message)
