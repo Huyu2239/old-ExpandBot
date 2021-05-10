@@ -6,6 +6,11 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from dotenv import load_dotenv
 
+import lib.check
+import lib.database
+import lib.embed
+
+
 load_dotenv()
 if os.name == 'nt':
     data_directory = 'json\\'
@@ -27,8 +32,16 @@ class Mybot(commands.Bot):
         )
         self.remove_command('help')
         self.data_directory = data_directory
+
+        self.check = lib.check
+        self.database = lib.database
+        self.embed = lib.embed
+        
         self.slash_client = SlashCommand(self, sync_commands=True)
+
+        self.guild_id = 829431106263580703
         self.log_ch_id = 830359131713175572
+
         self.mute_data = {
             "guilds": [],
             "channels": [],

@@ -3,6 +3,10 @@ import os
 
 from discord.ext import commands
 
+import lib.check
+import lib.database
+import lib.embed
+
 
 class Reload(commands.Cog):
     def __init__(self, bot):
@@ -28,8 +32,12 @@ class Reload(commands.Cog):
                 except commands.ExtensionAlreadyLoaded:
                     self.bot.reload_extension(f'cogs.{cog[:-3]}')
         if path == ('full' or 'lib'):
-            self.bot.get_cog('Expand').reload_libs()
-            self.bot.get_cog('Mute').reload_libs()
+            importlib.reload(lib.check)
+            self.bot.check = lib.check
+            importlib.reload(lib.database)
+            self.bot.database = lib.database
+            importlib.reload(lib.embed)
+            self.bot.embed = lib.embed
         if path == ('full' or 'json'):
             with open(f'{self.bot.data_directory}guilds_data.json') as f:
                 self.bot.guild_open = json.load(f)

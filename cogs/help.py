@@ -10,12 +10,11 @@ class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         asyncio.create_task(self.bot.slash.sync_all_commands())
-        self.help_em = self.compose_help_em()
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
-    def compose_help_em(self):
+    async def compose_help_em(self):
         help_em = [
             (
                 discord.Embed(
@@ -86,6 +85,10 @@ class Help(commands.Cog):
             server_mute = True
         else:
             server_mute = False
+        if ctx.guild.id in self.bot.mute_data.get('channels'):
+            channel_mute = True
+        else:
+            channel_mute = False
         if ctx.author.id in self.bot.mute_data.get('users'):
             user_mute = True
         else:
@@ -93,7 +96,7 @@ class Help(commands.Cog):
         com_em[1].add_field(
             name='`現在の設定`',
             value=f'```\nserver_mute={server_mute}\n```\n'
-                  '```\nchannel_mute=False\n```\n'
+                  f'```\nchannel_mute={channel_mute}\n```\n'
                   '```\nrole_mute=False\n```\n'
                   f'```\nuser_mute={user_mute}\n```\n'
         )
@@ -150,7 +153,8 @@ class Help(commands.Cog):
         if command is None:
             # await ctx.respond(eat=True)
             page = 0
-            help_msg = await ctx.send(embed=self.help_em[page])
+            help_em = await self.compose_help_em()
+            help_msg = await ctx.send(embed=help_em[page])
             emoji = '➡'
             await help_msg.add_reaction(emoji)
             while True:
@@ -160,17 +164,16 @@ class Help(commands.Cog):
                         return reaction, user
 
                 try:
-                    reaction, user = await self.bot.wait_for(
-                        "reaction_add", timeout=60.0, check=reaction_check)
+                    reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=reaction_check)
                     emoji = str(reaction.emoji)
                 except asyncio.TimeoutError:
                     await help_msg.remove_reaction(emoji, self.bot.user)
                     return
-                if page == len(self.help_em) - 1:
+                if page == len(help_em) - 1:
                     page = 0
                 else:
                     page += 1
-                await help_msg.edit(embed=self.help_em[page])
+                await help_msg.edit(embed=help_em[page])
             return
         elif command == 1:
             com_em = await self.compose_com_em(ctx)

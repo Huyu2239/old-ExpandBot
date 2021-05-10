@@ -1,22 +1,25 @@
-async def check_mute(self, message):
+async def check_mute(mute_data, message):
     num = 1
-    md = self.bot.mute_data
-    if message.guild:
-        if message.guild.id in md.get('guilds'):
+    if message.guild.id in mute_data.get('guilds'):
+        num *= -1
+    '''
+    if message.category:
+        if message.category.id in mute_data.get('categories'):
             num *= -1
-    if message.channel.id in md.get('channels'):
+    '''
+    if message.channel.id in mute_data.get('channels'):
         num *= -1
     for role in message.author.roles:
-        if role.id in md.get('roles'):
+        if role.id in mute_data.get('roles'):
             num *= -1
-    if message.author.id in md.get('users'):
+    if message.author.id in mute_data.get('users'):
         num *= -1
     if num == -1:
         return True
     else:
         return False
 
-async def check_hidden(self, m):
+async def check_hidden(m):
     # サーバー設定
     guild_data = self.guilds_data.get(str(m.guild.id))
     if guild_data:
@@ -27,5 +30,5 @@ async def check_hidden(self, m):
     # ユーザー設定
     '''
 
-async def check_anonymity(self, msg):
+async def check_anonymity(msg):
     pass

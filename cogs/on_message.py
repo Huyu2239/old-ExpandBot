@@ -2,8 +2,6 @@ import importlib
 import re
 
 import discord
-import libs.embed
-import libs.check
 from discord.ext import commands
 
 regex_discord_message_url = (
@@ -21,10 +19,6 @@ class Expand(commands.Cog):
     '''
     def __init__(self, bot):
         self.bot = bot
-
-    def reload_libs(self):
-        importlib.reload(libs.embed)
-        importlib.reload(libs.check)
 
     async def find_msgs(self, message):
         msgs = list()
@@ -57,7 +51,7 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        if await libs.check.check_mute(message):
+        if await self.bot.check.check_mute(self.bot.mute_data, message):
             return
 
         msgs = await self.find_msgs(message)
@@ -65,7 +59,7 @@ class Expand(commands.Cog):
             return
         for msg in msgs:
             files = []
-            embed_em = await libs.embed.Embed_ctrl.compose_embed(self.bot, msg, message)
+            embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
             await message.channel.send(embed=embed_em[0])
             if len(msg.attachments) >= 2:
                 # Send the second and subsequent attachments with embed (named 'embed') respectively:

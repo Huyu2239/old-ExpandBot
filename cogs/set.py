@@ -1,5 +1,4 @@
 import asyncio
-import libs.database
 import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
@@ -89,17 +88,7 @@ class Set(commands.Cog):
             target_name = f'on <@{ctx.author.id}>'
         '''
         if target_dict is None:
-            if target == 1:
-                target_dict = await libs.database.Database.write_new_data(self.bot.guilds_data, ctx.guild.id)  # guilds_data
-            else:
-                return
-            '''
-            if target == 2:
-                await libs.database.Database.write_new_data(self.bot.guilds_data)  # channels_data
-            if target == 3:
-                await libs.database.Database.write_new_data(self.bot.guilds_data)  # users_data
-            '''
-            # databaseでtmpを書き込み
+            target_dict = {}
 
         # dictの上書き
         if topic == 1:
@@ -126,7 +115,7 @@ class Set(commands.Cog):
         # レスポンス
         embed = await self.compose_setting_em(target_dict, target_name)
         await ctx.send(embed=embed)
-        await libs.database.Database.write_all_data(self.bot)
+        await self.database.write_all_data(self.bot)
 
 
 def setup(bot):
