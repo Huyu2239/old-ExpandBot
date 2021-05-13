@@ -81,14 +81,34 @@ class Help(commands.Cog):
                 )
             )
         ]
+        # guild_mute
         if ctx.guild.id in self.bot.mute_data.get('guilds'):
             server_mute = True
         else:
             server_mute = False
-        if ctx.guild.id in self.bot.mute_data.get('channels'):
+        # category_mute
+        if ctx.channel.category:
+            if ctx.channel.category_id in self.bot.mute_data.get('categories'):
+                category_mute = True
+            else:
+                category_mute = False
+        else:
+            category_mute = 'NotFound'
+        # channel_mute
+        if ctx.channel.id in self.bot.mute_data.get('channels'):
             channel_mute = True
         else:
             channel_mute = False
+        # role_mute
+        role_num = 1
+        for role in ctx.author.roles:
+            if role.id in self.bot.mute_data.get('roles'):
+                role_num *= -1
+        if role_num == -1:
+            role_mute = True
+        else:
+            role_mute = False
+        # user_mute
         if ctx.author.id in self.bot.mute_data.get('users'):
             user_mute = True
         else:
@@ -96,8 +116,9 @@ class Help(commands.Cog):
         com_em[1].add_field(
             name='`現在の設定`',
             value=f'```\nserver_mute={server_mute}\n```\n'
+                  f'```\ncategory_mute={category_mute}\n```\n'
                   f'```\nchannel_mute={channel_mute}\n```\n'
-                  '```\nrole_mute=False\n```\n'
+                  f'```\nrole_mute={role_mute}\n```\n'
                   f'```\nuser_mute={user_mute}\n```\n'
         )
         return com_em

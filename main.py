@@ -39,16 +39,20 @@ class Mybot(commands.Bot):
         
         self.slash_client = SlashCommand(self, sync_commands=True)
 
-        self.guild_id = 829431106263580703
-        self.log_ch_id = 830359131713175572
+        self.log_ch_id = 830233567215747132
 
         self.mute_data = {
             "guilds": [],
+            "categories": [],
             "channels": [],
             "roles": [],
             "users": []
         }
         self.guilds_data = {}
+        self.categories_data = {}
+        self.channels_data = {}
+        self.roles_data = {}
+        self.users_data = {}
 
 
     async def on_ready(self):

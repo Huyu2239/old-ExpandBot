@@ -9,114 +9,180 @@ class Set(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         asyncio.create_task(self.bot.slash.sync_all_commands())
+        self.timeout = discord.Embed(title='ERROR', description='タイムアウトしました。')
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
-    async def compose_setting_em(self, target_dict, target_name):
-        embed = discord.Embed(title='設定完了')
+    async def compose_set_em(self, target_dict, target_name):
+        embed = discord.Embed(
+            title=target_name.
+            description='設定する項目を番号で選択してください。\n0: 終了',
+            color=target_dict.get("embed_color")
+        )
         embed.add_field(
-            name=target_name,
-            value=f'```\nhidden={target_dict.get("hidden")}\n```\n'
-                  f'```\nanonymous={target_dict.get("anonymous")}\n```\n'
-                  f'```\nembed_type={target_dict.get("embed_type")}\n```\n'
-                  f'```\nembed_color={target_dict.get("embed_color")}\n```\n'
+            name='1: hidden',
+            value=f'```\n{target_dict.get("hidden")}\n```'
+        )
+        embed.add_field(
+            name='2: anonymity',
+            value=f'```\n{target_dict.get("anonymity")}\n```'
+        )
+        embed.add_field(
+            name='3: embed_type',
+            value=f'```\n{target_dict.get("embed_type")}\n```'
+        )
+        embed.add_field(
+            name='4: embed_color',
+            value=f'```\n{target_dict.get("embed_color")}\n```'
+        )
+        embed.add_field(
+            name='5: allow',
+            value=f'```\n{target_dict.get("allow")}\n```'
         )
         return embed
 
     @cog_ext.cog_slash(
         name='set',
-        description='展開に関する設定を行います。',
+        description='展開に関する設定',
         options=[
             create_option(
-                name="target",
-                description="設定する対象を選択してください。",
-                option_type=4, required=True,
+                name='target',
+                description='設定する対象を選択',
+                option_type=1, required=True,
                 choices=[
-                    create_choice(name="server", value=1),
-                    create_choice(name="channel", value=2),
-                    create_choice(name="user", value=3)
+                    create_choice(name='server', value=1),
+                    create_choice(name='category', value=2),
+                    create_choice(name='channel', value=3),
+                    create_choice(name='role', value=4),
+                    create_choice(name='user', value=5)
                 ]
+            )
+            create_option(
+                name='category',
+                description='設定するカテゴリーを選択',
+                option_type=7, required=False,
             ),
             create_option(
-                name="topic",
-                description="設定する項目を選択してください。",
-                option_type=4, required=True,
-                choices=[
-                    create_choice(name="hidden", value=1),
-                    create_choice(name="anonymous", value=2),
-                    create_choice(name="embed_type", value=3),
-                    create_choice(name="embed_color", value=4)
-                ]
-            ),
-            create_option(
-                name="channel",
-                description="別チャンネルの設定をする場合は、そのチャンネルを指定してください。(未入力の場合は送信したチャンネル)",
+                name='channel',
+                description='設定するチャンネルを選択',
                 option_type=7, required=False
             ),
             create_option(
-                name="embed_type",
-                description="展開のembedのタイプを選択してください。",
-                option_type=4, required=False,
-                choices=[
-                    create_choice(name="1", value=1)
-                ]
-            ),
-            create_option(
-                name="embed_color",
-                description="embedに使用するカラーを16進数で指定してください。無効なカラーを指定した場合展開されません",
-                option_type=7, required=False
+                name='role',
+                description='設定するロールを選択',
+                option_type=8, required=False
             )
         ]
     )
     async def slash_say(self, ctx: SlashContext, target, topic, embed_type=None, embed_color=None, channel=None):
-        # 設定するdictを汎用化
+        if ctx.guild is None and target != 5:
+            return
+        if target != 5:
+            pass  # もしサーバー管理権限なかったらreturn
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
-            target_name = f'on {ctx.guild.name}'
-        '''
+            if target_dict is None:
+                await self.bot.database.write_new_data(self.bot.guilds_data, ctx.guild.id)
+                target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
+            target_name = f'Server: {ctx.guild.name}'
         if target == 2:
+            if category:
+                target_dict = self.bot.categories_data.get(str(category.id))
+                if target_dict is None:
+                    await self.bot.database.write_new_data(self.bot.categories_data, category.id)
+                    target_dict = self.bot.categories_data.get(str(category.id))
+                target_name = f'Category: <#{category.id}>'
+            else:
+                if not ctx.channel.category:
+                    return await ctx.send('このコマンドをカテゴリー外チャンネルで実行する際は`category`オプションが必要です。')
+                target_dict = self.bot.channels_data.get(str(ctx.channel.category_id))
+                if target_dict is None:
+                    await self.bot.database.write_new_data(self.bot.categories_data, ctx.channel.category_id)
+                    target_dict = self.bot.categories_data.get(str(ctx.channel.category_id))
+                target_name = f'Category: <#{ctx.channel.category_id}>'
+        if target == 3:
             if channel:
                 target_dict = self.bot.channels_data.get(str(channel.id))
-                target_name = f'on <#{channel.id}>'
+                if target_dict is None:
+                    target_dict = await self.bot.database.write_new_data(self.bot)
+                target_name = f'TextChannel: <#{channel.id}>'
             else:
                 target_dict = self.bot.channels_data.get(str(ctx.channel.id))
-                target_name = f'on <#{ctx.channel.id}>'
-        if target == 3:
-            pass
+                if target_dict is None:
+                    target_dict = await self.bot.database.write_new_data()
+                target_name = f'TextChannel: <#{ctx.channel.id}>'
+        if target == 4:
+            if not role:
+                return
+            target_dict = self.bot.roles_data.get(str(role.id))
+            if target_dict is None:
+                await self.bot.database.write_new_data(self.bot.roles_data, role.id)
+                target_dict = self.bot.roles_data.get(str(role.id))
+            target_name = f'Role: {role.name}'
+        if target == 5:
             target_dict = self.bot.users_data.get(str(ctx.author.id))
-            target_name = f'on <@{ctx.author.id}>'
-        '''
-        if target_dict is None:
-            target_dict = {}
+            if target_dict is None:
+                await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
+                target_dict = self.bot.roles_data.get(str(ctx.author.id))
+            target_name = f'User: <@{ctx.author.id}>'
 
-        # dictの上書き
-        if topic == 1:
-            if target_dict.get('hidden') is False:
-                target_dict['hidden'] = True
+        m = await ctx.send(await compose_set_em(target_dict, target_name))
+        while True:
+            def check_int(m):
+                if m.author == ctx.author and m.channel == ctx.channel:
+                    try:
+                        int(m.content)
+                    except SyntaxError:
+                        return False
+                return True
+
+            try:
+                num = self.bot.wait_for('message', timeout=60, check=check_int)
+            except asyncio.Timeout:
+                return await m.edit(embed=self.timeout)
+            if int(num.content) == 0:
+                await m.edit(content='終了')
+                # ✔
+                break
+            elif int(num.content) == 1:
+                if target_dict.get('hidden'):
+                    target_dict["hidden"] = False
+                else:
+                    target_dict["hidden"] = True
+            elif int(num.content) == 2:
+                if target_dict.get('anonymity'):
+                    target_dict["anonymity"] = False
+                else:
+                    target_dict["anonymity"] = True
+            elif int(num.content) == 3:
+                await ctx.send('embed_typeを送信してください。(1~1)')
+                try:
+                    embed_type = self.bot.wait_for('message', timeout=60, check=check_int)
+                except asyncio.Timeout:
+                    return await m.edit(embed=self.timeout)
+                target_dict["embed_type"] = int(embed_type.content)
+            elif int(num.content) == 4:
+                await ctx.send('embed_colorを16進数で送信してください。')
+                try:
+                    embed_color = self.bot.wait_for('message', timeout=60, check=check_int)
+                except asyncio.Timeout:
+                    return await m.edit(embed=self.timeout)
+                target_dict["embed_color"] = int(embed_color.content)
+            elif int(num.content) == 5:
+                await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
+                try:
+                    allow_num = self.bot.wait_for('message', timeout=60, check=check_int)
+                except asyncio.Timeout:
+                    return await m.edit(embed=self.timeout)
+                if int(allow_num.content) not in target_dict.get('allow'):
+                    target_dict["allow"].append(int(allow_num.content))
+                else:
+                    target_dict["allow"].remove(int(allow_num.content))
             else:
-                target_dict['hidden'] = False
-        if topic == 2:
-            if target_dict.get('anonymous') is False:
-                target_dict['anonymous'] = True
-            else:
-                target_dict['anonymous'] = False
-        if topic == 3:
-            if embed_type is None:
-                embed = discord.Embed(title='ERROR', description='embed_typeが指定されていません。', color=discord.Colour.red())
-                return await ctx.send(embed=embed)
-            target_dict['embed_type'] = embed_type
-        if topic == 4:
-            if embed_color is None:
-                embed = discord.Embed(title='ERROR', description='embed_colorが指定されていません。', color=discord.Colour.red())
-                return await ctx.send(embed=embed)
-            target_dict['embed_color'] = embed_color
-
-        # レスポンス
-        embed = await self.compose_setting_em(target_dict, target_name)
-        await ctx.send(embed=embed)
-        await self.database.write_all_data(self.bot)
-
+                continue  # ?
+            # ✔
+        await self.bot.database.write_all_data(self.bot)
 
 def setup(bot):
     bot.add_cog(Set(bot))

@@ -25,6 +25,23 @@ class Mute(commands.Cog):
             mute_guilds.append(ctx.guild.id)
             return 'サーバーの展開をOFFにしました'
 
+    async def set_category_mute(self, value, ctx):
+        item = int()
+        if value is None:
+            if ctx.channel.category:
+                item = ctx.channel.category_id
+            else:
+                return await ctx.send('このコマンドをカテゴリー外チャンネルで実行する際は`category`オプションが必要です。')
+        else:
+            item = value.id
+        mute_categories = self.bot.mute_data.get('categories')
+        if item in mute_categories:
+            mute_categories.remove(item)
+            return f'<#{item}>の展開をONにしました'
+        else:
+            mute_categories.append(item)
+            return f'<#{item}>の展開をOFFにしました'
+
     async def set_channel_mute(self, value, ctx):
         item = int()
         if value is None:
@@ -66,41 +83,50 @@ class Mute(commands.Cog):
         options=[
             create_option(
                 name="target",
-                description="muteする対象を選択してください。",
+                description="muteする対象を選択",
                 option_type=4, required=True,
                 choices=[
                     create_choice(name="server", value=1),
-                    create_choice(name="channel", value=2),
-                    create_choice(name="role", value=3),
-                    create_choice(name="user", value=4)
+                    create_choice(name="category", value=2),
+                    create_choice(name="channel", value=3),
+                    create_choice(name="role", value=4),
+                    create_choice(name="user", value=5)
                 ]
             ),
             create_option(
+                name="category",
+                description="muteするカテゴリーを選択",
+                option_type=7, required=False
+            ),
+            create_option(
                 name="channel",
-                description="muteするチャンネルを指定してください。(未入力の場合は送信したチャンネル)",
+                description="muteするチャンネル選択",
                 option_type=7, required=False
             ),
             create_option(
                 name="role",
-                description="muteするロールを指定してください。",
+                description="muteするロールを選択",
                 option_type=8, required=False
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, channel=None, role=None):
+    async def slash_say(self, ctx: SlashContext, target, category=None, channel=None, role=None):
         msg = str()
         if target == 1:
             msg = await self.set_guild_mute(ctx)
         if target == 2:
-            msg = await self.set_channel_mute(channel, ctx)
+            msg = await self.set_channel_mute(category, ctx)
         if target == 3:
-            msg = await self.set_role_mute(role, ctx)
+            msg = await self.set_channel_mute(channel, ctx)
         if target == 4:
+            msg = await self.set_role_mute(role, ctx)
+        if target == 5:
             msg = await self.set_user_mute(ctx)
-
+        if msg is None:
+            return
         embed = discord.Embed(title='設定完了', description=msg, color=discord.Colour.blue())
         await ctx.send(embed=embed)
-        await self.bot.database.Mute_Data.write_mute_data(self.bot)
+        await self.bot.database.Mute_Data.write(self.bot)
 
 
 def setup(bot):
