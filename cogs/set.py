@@ -57,7 +57,7 @@ class Set(commands.Cog):
                     create_choice(name='role', value=4),
                     create_choice(name='user', value=5)
                 ]
-            )
+            ),
             create_option(
                 name='category',
                 description='設定するカテゴリーを選択',
