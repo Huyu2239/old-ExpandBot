@@ -29,7 +29,7 @@ class Expand(commands.Cog):
                 msg_id=int(ids['message']),
             )
             if message.guild.id != int(ids['guild']):
-                msg_hidden = await self.bot.check.check_hidden(msg)
+                msg_hidden = await self.bot.check.check_hidden(self.bot, msg)
                 if msg_hidden is True:
                     continue
                 else:
