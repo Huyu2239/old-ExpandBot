@@ -139,7 +139,7 @@ class Set(commands.Cog):
                 return True
 
             try:
-                num = self.bot.wait_for('message', timeout=60, check=check_int)
+                num = await self.bot.wait_for('message', timeout=60, check=check_int)
             except asyncio.Timeout:
                 return await m.edit(embed=self.timeout)
             if int(num.content) == 0:
@@ -159,21 +159,21 @@ class Set(commands.Cog):
             elif int(num.content) == 3:
                 await ctx.send('embed_typeを送信してください。(1~1)')
                 try:
-                    embed_type = self.bot.wait_for('message', timeout=60, check=check_int)
+                    embed_type = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.Timeout:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_type"] = int(embed_type.content)
             elif int(num.content) == 4:
                 await ctx.send('embed_colorを16進数で送信してください。')
                 try:
-                    embed_color = self.bot.wait_for('message', timeout=60, check=check_int)
+                    embed_color = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.Timeout:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_color"] = int(embed_color.content)
             elif int(num.content) == 5:
                 await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
                 try:
-                    allow_num = self.bot.wait_for('message', timeout=60, check=check_int)
+                    allow_num = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.Timeout:
                     return await m.edit(embed=self.timeout)
                 if int(allow_num.content) not in target_dict.get('allow'):
