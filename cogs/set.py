@@ -49,7 +49,7 @@ class Set(commands.Cog):
             create_option(
                 name='target',
                 description='設定する対象を選択',
-                option_type=1, required=True,
+                option_type=4, required=True,
                 choices=[
                     create_choice(name='server', value=1),
                     create_choice(name='category', value=2),
