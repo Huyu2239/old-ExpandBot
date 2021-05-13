@@ -128,8 +128,8 @@ class Set(commands.Cog):
                 target_dict = self.bot.roles_data.get(str(ctx.author.id))
             target_name = f'User: <@{ctx.author.id}>'
 
-        m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
         while True:
+            m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
             def check_int(m):
                 if m.author == ctx.author and m.channel == ctx.channel:
                     try:
@@ -145,7 +145,7 @@ class Set(commands.Cog):
             except asyncio.Timeout:
                 return await m.edit(embed=self.timeout)
             if int(num.content) == 0:
-                await m.edit(content='終了')
+                await m.edit(content='終了', embed=None)
                 await num.add_reaction('\U00002705')
                 break
             elif int(num.content) == 1:
