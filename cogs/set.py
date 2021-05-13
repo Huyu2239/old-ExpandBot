@@ -136,7 +136,9 @@ class Set(commands.Cog):
                         int(m.content)
                     except SyntaxError:
                         return False
-                return True
+                    return True
+                else:
+                    return False
 
             try:
                 num = await self.bot.wait_for('message', timeout=60, check=check_int)
