@@ -75,11 +75,12 @@ class Set(commands.Cog):
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, topic, embed_type=None, embed_color=None, channel=None):
+    async def slash_say(self, ctx: SlashContext, target, embed_type=None, embed_color=None, channel=None):
         if ctx.guild is None and target != 5:
             return
         if target != 5:
-            pass  # もしサーバー管理権限なかったらreturn
+            if not ctx.author.guild_permissions.manage_guild:
+                return
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             if target_dict is None:
@@ -143,7 +144,7 @@ class Set(commands.Cog):
                 return await m.edit(embed=self.timeout)
             if int(num.content) == 0:
                 await m.edit(content='終了')
-                # ✔
+                await num.add_reaction('\U00002705')
                 break
             elif int(num.content) == 1:
                 if target_dict.get('hidden'):
@@ -180,8 +181,9 @@ class Set(commands.Cog):
                 else:
                     target_dict["allow"].remove(int(allow_num.content))
             else:
-                continue  # ?
-            # ✔
+                await num.add_reaction('\U00002753')
+                continue
+            await num.add_reaction('\U00002705')
         await self.bot.database.write_all_data(self.bot)
 
 def setup(bot):
