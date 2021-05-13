@@ -61,7 +61,7 @@ class Set(commands.Cog):
             create_option(
                 name='category',
                 description='設定するカテゴリーを選択',
-                option_type=7, required=False,
+                option_type=7, required=False
             ),
             create_option(
                 name='channel',
