@@ -16,7 +16,7 @@ class Set(commands.Cog):
 
     async def compose_set_em(self, target_dict, target_name):
         embed = discord.Embed(
-            title=target_name.
+            title=target_name,
             description='設定する項目を番号で選択してください。\n0: 終了',
             color=target_dict.get("embed_color")
         )
