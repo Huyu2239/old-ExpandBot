@@ -32,6 +32,8 @@ class Expand(commands.Cog):
                 msg_hidden = await self.bot.check.check_hidden(msg)
                 if msg_hidden is True:
                     continue
+                else:
+                    pass  # check_allow
             msgs.append(msg)
         return msgs
 
