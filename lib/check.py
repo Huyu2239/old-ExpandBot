@@ -51,4 +51,4 @@ async def check_anonymity(target_data, target_id):
     if target_dict:
         return target_dict.get('anonymity')
     else:
-        return True
+        return False
