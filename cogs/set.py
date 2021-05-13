@@ -127,9 +127,8 @@ class Set(commands.Cog):
                 await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
                 target_dict = self.bot.roles_data.get(str(ctx.author.id))
             target_name = f'User: <@{ctx.author.id}>'
-
+        m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
         while True:
-            m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
             def check_int(m):
                 if m.author == ctx.author and m.channel == ctx.channel:
                     try:
@@ -186,6 +185,7 @@ class Set(commands.Cog):
                 await num.add_reaction('\U00002753')
                 continue
             await num.add_reaction('\U00002705')
+            await m.edit(embed=await self.compose_set_em(target_dict, target_name))
         await self.bot.database.write_all_data(self.bot)
 
 def setup(bot):
