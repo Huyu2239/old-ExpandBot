@@ -128,7 +128,7 @@ class Set(commands.Cog):
                 target_dict = self.bot.roles_data.get(str(ctx.author.id))
             target_name = f'User: <@{ctx.author.id}>'
 
-        m = await ctx.send(await self.compose_set_em(target_dict, target_name))
+        m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
         while True:
             def check_int(m):
                 if m.author == ctx.author and m.channel == ctx.channel:
