@@ -56,11 +56,11 @@ class Help(commands.Cog):
         )
         help_em[1].add_field(
             name='`/set`',
-            value='展開に関する設定をします。(未実装)'
+            value='展開に関する設定をします。'
         )
         help_em[1].add_field(
             name='`/mute`',
-            value='展開の無効化・有効化をします。(未実装)'
+            value='展開の無効化・有効化をします。'
         )
         return help_em
 
@@ -126,7 +126,7 @@ class Help(commands.Cog):
     async def compose_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description="展開に関する設定を行います。(未実装)",
+            description="展開に関する設定を行います。",
             color=discord.Colour.blue()
         )
         guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
@@ -146,6 +146,11 @@ class Help(commands.Cog):
             name='`embed_type`',
             value='メッセージのリンクが送信された際に、\nどのような形式で展開するのかを選択できます。\n'
                   f'```\nembed_type={guild_data.get("embed_type")}\n```\n'
+        )
+        set_em.add_field(
+            name='`embed_color`',
+            value='メッセージのリンクが送信された際の埋め込みの色を指定できます。\n'
+                  f'```\nembed_type={guild_data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
             name='`allow`',
