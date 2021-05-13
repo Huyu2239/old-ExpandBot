@@ -125,7 +125,7 @@ class Set(commands.Cog):
             target_dict = self.bot.users_data.get(str(ctx.author.id))
             if target_dict is None:
                 await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
-                target_dict = self.bot.roles_data.get(str(ctx.author.id))
+                target_dict = self.bot.users_data.get(str(ctx.author.id))
             target_name = f'User: <@{ctx.author.id}>'
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
         while True:
