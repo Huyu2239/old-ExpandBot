@@ -3,7 +3,7 @@ async def check_mute(mute_data, message):
     if message.guild.id in mute_data.get('guilds'):
         num *= -1
     if message.channel.category:
-        if message.category_id in mute_data.get('categories'):
+        if message.channel.category_id in mute_data.get('categories'):
             num *= -1
     if message.channel.id in mute_data.get('channels'):
         num *= -1
