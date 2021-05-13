@@ -19,10 +19,18 @@ async def check_mute(mute_data, message):
 
 
 async def check_hidden(bot, m):
-    # guilds
-    guild_data = bot.guilds_data.get(str(m.guild.id))
-    if guild_data:
-        if guild_data.get('hidden'):
+    # users
+    user_data = bot.users_data.get(str(m.author.id))
+    if user_data:
+        if user_data.get('hidden'):
+            return True
+    # roles
+    '''
+    '''
+    # channels
+    channel_data = bot.channels_data.get(str(m.channel.id))
+    if channel_data:
+        if channel_data.get('hidden'):
             return True
     # categories
     if m.channel.category:
@@ -30,18 +38,10 @@ async def check_hidden(bot, m):
         if category_data:
             if category_data.get('hidden'):
                 return True
-    # channels
-    channel_data = bot.channels_data.get(str(m.channel.id))
-    if channel_data:
-        if channel_data.get('hidden'):
-            return True
-    # roles
-    '''
-    '''
-    # users
-    user_data = bot.users_data.get(str(m.author.id))
-    if user_data:
-        if user_data.get('hidden'):
+    # guilds
+    guild_data = bot.guilds_data.get(str(m.guild.id))
+    if guild_data:
+        if guild_data.get('hidden'):
             return True
     return False
 
