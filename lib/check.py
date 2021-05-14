@@ -25,8 +25,11 @@ async def check_hidden(bot, m):
         if user_data.get('hidden'):
             return True
     # roles
-    '''
-    '''
+    for role in m.author.roles:
+        role_data = bot.roles_data.get(str(role.id))
+        if role_data:
+            if role_data.get('hidden'):
+                return True
     # channels
     channel_data = bot.channels_data.get(str(m.channel.id))
     if channel_data:
@@ -50,5 +53,40 @@ async def check_anonymity(target_data, target_id):
     target_dict = target_data.get(str(target_id))
     if target_dict:
         return target_dict.get('anonymity')
+    else:
+        return False
+
+async def check_allow(bot, message, msg):
+    num = 1
+    message_data_list = [message.guild.id, message.channel.category_id, message.channel.id, message.author.id] + [role.id for role in message.author.roles]
+    # guild
+    msg_guild_data = bot.guilds_data.get(str(msg.guild.id))
+    if msg_guild_data:
+        valid_elements = set(message_data_list) & set(msg_guild_data.get('allow'))
+        num *= -1**len(valid_elements)
+    # category
+    msg_categories_data = bot.categories_data.get(str(msg.channel.category_id))
+    if msg_categories_data:
+        valid_elements = set(message_data_list) & set(msg_categories_data.get('allow'))
+        num *= -1**len(valid_elements)
+    # channel
+    msg_channel_data = bot.channels_data.get(str(msg.channel.id))
+    if msg_channel_data:
+        valid_elements = set(message_data_list) & set(msg_channel_data.get('allow'))
+        num *= -1**len(valid_elements)
+    # role
+    for role in msg.author.roles:
+        msg_role_data = bot.roles_data.get(str(role.id))
+        if msg_role_data:
+            valid_elements = set(message_data_list) & set(msg_role_data.get('allow'))
+            num *= -1**len(valid_elements)
+    # user
+    msg_user_data = bot.users_data.get(str(msg.author.id))
+    if msg_user_data:
+        valid_elements = set(message_data_list) & set(msg_user_data.get('allow'))
+        num *= -1**len(valid_elements)
+    
+    if num == -1:
+        return True
     else:
         return False

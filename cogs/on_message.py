@@ -22,7 +22,8 @@ class Expand(commands.Cog):
 
     async def find_msgs(self, message):
         msgs = list()
-        for ids in re.finditer(regex_discord_message_url, message.content):
+        message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
+        for ids in re.finditer(regex_discord_message_url, message_text):
             msg = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids['guild'])),
                 msg_channel_id=int(ids['channel']),
@@ -31,10 +32,12 @@ class Expand(commands.Cog):
             if message.guild.id != int(ids['guild']):
                 msg_hidden = await self.bot.check.check_hidden(self.bot, msg)
                 if msg_hidden is True:
-                    continue
-                else:
-                    pass  # check_allow
+                    msg_allow = await self.bot.check.check_allow(self.bot, message, msg)
+                    if msg_allow is False:
+                        continue
             msgs.append(msg)
+        if len(msgs) != len(re.finditer(regex_discord_message_url, message.content)):
+            await message.add_reaction('\U0000274c')
         return msgs
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
@@ -60,7 +63,6 @@ class Expand(commands.Cog):
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
             await message.channel.send(embed=embed_em[0])
             if len(msg.attachments) >= 2:
-                # Send the second and subsequent attachments with embed (named 'embed') respectively:
                 for attachment in msg.attachments[1:]:
                     embed = discord.Embed()
                     embed.set_image(
