@@ -36,7 +36,7 @@ class Expand(commands.Cog):
                     if msg_allow is False:
                         continue
             msgs.append(msg)
-        if len(msgs) != len(re.finditer(regex_discord_message_url, message.content)):
+        if len(msgs) != len(re.findall(regex_discord_message_url, message_text)):
             await message.add_reaction('\U0000274c')
         return msgs
 
