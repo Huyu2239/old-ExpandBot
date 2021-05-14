@@ -31,6 +31,8 @@ class Expand(commands.Cog):
                 msg_channel_id=int(ids['channel']),
                 msg_id=int(ids['message']),
             )
+            if msg is None:
+                continue
             if message.guild.id != int(ids['guild']):
                 msg_hidden = await self.bot.check.check_hidden(self.bot, msg)
                 if msg_hidden is True:
@@ -44,6 +46,8 @@ class Expand(commands.Cog):
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
+        if channel is None:
+            return
         try:
             msg = await channel.fetch_message(msg_id)
         except Exception:
