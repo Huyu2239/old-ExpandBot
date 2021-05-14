@@ -24,6 +24,8 @@ class Expand(commands.Cog):
         msgs = list()
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
         for ids in re.finditer(regex_discord_message_url, message_text):
+            if self.bot.get_guild(int(ids['guild'])) is None:
+                continue
             msg = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids['guild'])),
                 msg_channel_id=int(ids['channel']),
@@ -42,6 +44,8 @@ class Expand(commands.Cog):
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
+        if channel is None:
+            return
         try:
             msg = await channel.fetch_message(msg_id)
         except Exception:
