@@ -44,8 +44,6 @@ class Expand(commands.Cog):
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
-        if channel is None:
-            return
         try:
             msg = await channel.fetch_message(msg_id)
         except Exception:
