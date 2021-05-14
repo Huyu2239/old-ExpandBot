@@ -13,6 +13,7 @@ class CommandErrorHandler(commands.Cog):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
         print(error_str)
+        await ctx.add_reaction('\U0000274c')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
