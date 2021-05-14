@@ -2,15 +2,6 @@ from discord import Embed
 
 
 async def compose_embed(bot, msg, message):
-    names = await get_names(bot, msg, message)
-    embed_type = await get_embed_type(bot, message)
-    if embed_type == 1:
-        embed = await Compose.type_1(msg, message, names)
-    else:
-        embed = await Compose.type_1(msg, message, names)
-    return embed, embed_type
-
-async def get_names(bot, msg, message):
     names = {
         "user_name": msg.author.display_name,
         "user_icon": msg.author.avatar_url,
@@ -18,9 +9,18 @@ async def get_names(bot, msg, message):
         "guild_name": msg.guild.name,
         "guild_icon": msg.guild.icon_url
     }
+    if msg.guild != message.guild:
+        names = await update_names(bot, msg, message, names)
+    embed_type = await get_embed_type(bot, message)
+    if embed_type == 1:
+        embed = await Compose.type_1(msg, message, names)
+    else:
+        embed = await Compose.type_1(msg, message, names)
+    return embed, embed_type
+
+async def update_names(bot, msg, message, names):
     if msg.channel.category:
         names["category_name"] = msg.channel.category.name
-
     if await bot.check.check_anonymity(bot.users_data, msg.author.id):
         names["user_name"] = '匿名ユーザー'
         names["user_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
