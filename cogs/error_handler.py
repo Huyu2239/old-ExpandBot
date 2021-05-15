@@ -79,7 +79,12 @@ class CommandErrorHandler(commands.Cog):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
         print(error_str)  # stderr
-        await ctx.message.add_reaction('\U0000274c')
+        embed = discord.Embed(title='ERROR', color=discord.Colour.red())
+        embed.add_field(
+            name='内部エラー\nサポートサーバーまでご連絡ください',
+            value=f'```py\n{error_str}```'
+        )
+        await ctx.send(embed)
 
 
 def setup(bot):
