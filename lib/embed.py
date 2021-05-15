@@ -12,7 +12,6 @@ async def compose_embed(bot, msg, message):
     if msg.channel.category:
         names["category_name"] = msg.channel.category.name
     if msg.guild != message.guild:
-        print('update')
         names = await update_names(bot, msg, message, names)
     embed_type = await get_embed_type(bot, message)
     if embed_type == 1:
@@ -24,15 +23,12 @@ async def compose_embed(bot, msg, message):
 
 async def update_names(bot, msg, message, names):
     if await bot.check.check_allow(bot, message, msg):
-        print('allowed')
         return names
     for role in msg.author.roles:
         num = 1
         if await bot.check.check_anonymity(bot.roles_data, role.id):
             num *= -1
-    print(await bot.check.check_anonymity(bot.guilds_data, msg.guild.id))
     if await bot.check.check_anonymity(bot.guilds_data, msg.guild.id) or num == -1:
-        print('ano')
         names["guild_name"] = '匿名サーバー'
         names["guild_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
         names["category_name"] = '匿名カテゴリ'
