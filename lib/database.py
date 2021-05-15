@@ -12,14 +12,17 @@ async def write_new_data(target_dict: dict, target_id):
     target_dict[str(target_id)] = tmp_dict
     return target_dict.get(str(target_id))
 
+
 async def read_all_data(bot):
     mute_data = await Mute_Data.read(bot)
     guilds_data = await Guilds_Data.read(bot)
     return mute_data, guilds_data
 
+
 async def write_all_data(bot):
     await Mute_Data.write(bot)
     await Guilds_Data.write(bot)
+
 
 class Mute_Data:
     async def read(bot):
@@ -30,6 +33,7 @@ class Mute_Data:
         with open(f'{bot.data_directory}mute_data.json', 'w', encoding='utf-8') as f:
             json.dump(bot.mute_data, f, ensure_ascii=False, indent=4)
 
+
 class Guilds_Data:
     async def read(bot):
         with open(f'{bot.data_directory}guilds_data.json') as f:
@@ -38,6 +42,7 @@ class Guilds_Data:
     async def write(bot):
         with open(f'{bot.data_directory}guilds_data.json', 'w', encoding='utf-8') as f:
             json.dump(bot.guilds_data, f, ensure_ascii=False, indent=4)
+
 
 '''
 class Categories_Data:
