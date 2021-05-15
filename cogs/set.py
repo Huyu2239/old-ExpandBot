@@ -112,7 +112,7 @@ class Set(commands.Cog):
             else:
                 target_dict = self.bot.channels_data.get(str(ctx.channel.id))
                 if target_dict is None:
-                    await self.bot.database.write_new_data(self.bot.channels_data. ctx.channel.id)
+                    await self.bot.database.write_new_data(self.bot.channels_data, ctx.channel.id)
                     target_dict = self.bot.channels_data.get(str(ctx.channel.id))
                 target_name = f'TextChannel: <#{ctx.channel.id}>'
         if target == 4:
