@@ -1,4 +1,3 @@
-import importlib
 import re
 
 import discord
@@ -65,7 +64,6 @@ class Expand(commands.Cog):
         if msgs is None:
             return
         for msg in msgs:
-            files = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
             await message.channel.send(embed=embed_em[0])
             if len(msg.attachments) >= 2:

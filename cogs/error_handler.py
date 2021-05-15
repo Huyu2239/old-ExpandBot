@@ -74,6 +74,13 @@ class CommandErrorHandler(commands.Cog):
             await self.bot.get_channel(self.bot.log_ch_id).send('文字数を超過しました')
         print(error_msg)
 
+    @commands.Cog.listener()
+    async def on_slash_command_error(self, ctx, error):
+        orig_error = getattr(error, "original", error)
+        error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
+        print(error_str)  # stderr
+        await ctx.add_reaction('\U0000274c')
+
 
 def setup(bot):
     bot.add_cog(CommandErrorHandler(bot))
