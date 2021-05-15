@@ -106,12 +106,14 @@ class Set(commands.Cog):
             if channel:
                 target_dict = self.bot.channels_data.get(str(channel.id))
                 if target_dict is None:
-                    target_dict = await self.bot.database.write_new_data(self.bot)
+                    await self.bot.database.write_new_data(self.bot.channels_data. channel.id)
+                    target_dict = self.bot.channels_data.get(str(channel.id))
                 target_name = f'TextChannel: <#{channel.id}>'
             else:
                 target_dict = self.bot.channels_data.get(str(ctx.channel.id))
                 if target_dict is None:
-                    target_dict = await self.bot.database.write_new_data()
+                    await self.bot.database.write_new_data(self.bot.channels_data. ctx.channel.id)
+                    target_dict = self.bot.channels_data.get(str(ctx.channel.id))
                 target_name = f'TextChannel: <#{ctx.channel.id}>'
         if target == 4:
             if not role:
