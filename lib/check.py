@@ -22,7 +22,6 @@ async def check_hidden(bot, m):
     # users
     user_data = bot.users_data.get(str(m.author.id))
     if user_data:
-        print(user_data.get('hidden'))
         return user_data.get('hidden')
     # roles
     for role in m.author.roles:
