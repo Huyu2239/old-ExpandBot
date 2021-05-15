@@ -33,7 +33,7 @@ class Expand(commands.Cog):
             if msg is None:
                 continue
             if await self.bot.check.check_mute(self.bot.mute_data, message):
-                msg_allow = await self.bot.check.check_allow(self.bot, message, msg)
+                msg_allow = await self.bot.check.check_allow(self.bot, msg, message)
                 if msg_allow is False:
                     continue
             if message.guild.id != int(ids['guild']):
