@@ -22,30 +22,25 @@ async def check_hidden(bot, m):
     # users
     user_data = bot.users_data.get(str(m.author.id))
     if user_data:
-        if user_data.get('hidden'):
-            return True
+        return user_data.get('hidden')
     # roles
     for role in m.author.roles:
         role_data = bot.roles_data.get(str(role.id))
         if role_data:
-            if role_data.get('hidden'):
-                return True
+            return role_data.get('hidden')
     # channels
     channel_data = bot.channels_data.get(str(m.channel.id))
     if channel_data:
-        if channel_data.get('hidden'):
-            return True
+        return channel_data.get('hidden')
     # categories
     if m.channel.category:
         category_data = bot.categories_data.get(str(m.channel.category_id))
         if category_data:
-            if category_data.get('hidden'):
-                return True
+            return category_data.get('hidden')
     # guilds
     guild_data = bot.guilds_data.get(str(m.guild.id))
     if guild_data:
-        if guild_data.get('hidden'):
-            return True
+        return guild_data.get('hidden')
     return False
 
 
@@ -55,6 +50,7 @@ async def check_anonymity(target_data, target_id):
         return target_dict.get('anonymity')
     else:
         return True
+
 
 async def check_allow(bot, message, msg):
     num = 1
@@ -85,7 +81,7 @@ async def check_allow(bot, message, msg):
     if msg_user_data:
         valid_elements = set(message_data_list) & set(msg_user_data.get('allow'))
         num *= -1**len(valid_elements)
-    
+
     if num == -1:
         return True
     else:
