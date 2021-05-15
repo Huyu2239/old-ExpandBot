@@ -160,21 +160,23 @@ class Set(commands.Cog):
                 else:
                     target_dict["anonymity"] = True
             elif int(num.content) == 3:
-                await ctx.send('embed_typeを送信してください。(1~1)')
+                s = await ctx.send('embed_typeを送信してください。(1~1)')
                 try:
                     embed_type = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.TimeoutError:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_type"] = int(embed_type.content)
+                await s.delete()
             elif int(num.content) == 4:
-                await ctx.send('embed_colorを16進数で送信してください。')
+                s = await ctx.send('embed_colorを16進数で送信してください。')
                 try:
                     embed_color = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.TimeoutError:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_color"] = int(embed_color.content)
+                await s.delete()
             elif int(num.content) == 5:
-                await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
+                s = await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
                 try:
                     allow_num = await self.bot.wait_for('message', timeout=60, check=check_int)
                 except asyncio.TimeoutError:
@@ -183,10 +185,14 @@ class Set(commands.Cog):
                     target_dict["allow"].append(int(allow_num.content))
                 else:
                     target_dict["allow"].remove(int(allow_num.content))
+                await s.delete()
             else:
                 await num.add_reaction('\U00002753')
                 continue
-            await num.add_reaction('\U00002705')
+            try:
+                await num.delete()
+            except Exception:
+                await num.add_reaction('\U00002705')
             await m.edit(embed=await self.compose_set_em(target_dict, target_name))
         await self.bot.database.write_all_data(self.bot)
 
