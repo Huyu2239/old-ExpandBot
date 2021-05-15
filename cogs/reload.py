@@ -1,4 +1,3 @@
-import json
 import os
 from discord.ext import commands
 from importlib import reload
@@ -33,18 +32,13 @@ class Reload(commands.Cog):
                     self.bot.load_extension(f'cogs.{cog[:-3]}')
                 except commands.ExtensionAlreadyLoaded:
                     self.bot.reload_extension(f'cogs.{cog[:-3]}')
-        if path == ('full' or 'lib'):
+        if path == 'lib':
             reload(lib.check)
             self.bot.check = lib.check
             reload(lib.database)
             self.bot.database = lib.database
             reload(lib.embed)
             self.bot.embed = lib.embed
-        if path == ('full' or 'json'):
-            with open(f'{self.bot.data_directory}guilds_data.json') as f:
-                self.bot.guild_open = json.load(f)
-            with open(f'{self.bot.data_directory}mute_data.json') as f:
-                self.bot.embed_type = json.load(f)
 
         await msg.edit(content='更新しました')
         print('--------------------------------------------------')
