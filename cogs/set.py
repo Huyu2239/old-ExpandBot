@@ -75,7 +75,7 @@ class Set(commands.Cog):
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, embed_type=None, embed_color=None, channel=None):
+    async def slash_say(self, ctx: SlashContext, target, category=None, role=None, channel=None):
         if ctx.guild is None and target != 5:
             return
         if target != 5:
@@ -187,6 +187,7 @@ class Set(commands.Cog):
             await num.add_reaction('\U00002705')
             await m.edit(embed=await self.compose_set_em(target_dict, target_name))
         await self.bot.database.write_all_data(self.bot)
+
 
 def setup(bot):
     bot.add_cog(Set(bot))
