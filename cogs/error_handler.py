@@ -79,7 +79,7 @@ class CommandErrorHandler(commands.Cog):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
         print(error_str)  # stderr
-        await ctx.add_reaction('\U0000274c')
+        await ctx.message.add_reaction('\U0000274c')
 
 
 def setup(bot):
