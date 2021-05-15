@@ -18,39 +18,61 @@ async def compose_embed(bot, msg, message):
         embed = await Compose.type_1(msg, message, names)
     return embed, embed_type
 
+
 async def update_names(bot, msg, message, names):
     if msg.channel.category:
         names["category_name"] = msg.channel.category.name
-    if await bot.check.check_anonymity(bot.users_data, msg.author.id):
-        names["user_name"] = '匿名ユーザー'
-        names["user_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
-    if await bot.check.check_anonymity(bot.channels_data, msg.channel.id):
-        names["channel_name"] = '匿名チャンネル'
-    if await bot.check.check_anonymity(bot.categories_data, msg.channel.category_id):
-        names["category_name"] = '匿名カテゴリ'
-    if await bot.check.check_anonymity(bot.guilds_data, msg.guild.id):
+    if await bot.check.check_allow(bot, message, msg):
+        return names
+    for role in msg.author.roles:
+        num = 1
+        if await bot.check.check_anonymity(bot.roles_data, role.id):
+            num *= -1
+    if await bot.check.check_anonymity(bot.guilds_data, msg.guild.id) or num == -1:
         names["guild_name"] = '匿名サーバー'
         names["guild_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
+        names["category_name"] = '匿名カテゴリ'
+        names["channel_name"] = '匿名チャンネル'
+        names["user_name"] = '匿名ユーザー'
+        names["user_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
+    if msg.channel.category:
+        if not await bot.check.check_anonymity(bot.categories_data, msg.channel.category_id):
+            names["category_name"] = msg.channel.category.name
+        else:
+            names["category_name"] = '匿名カテゴリ'
+    if not await bot.check.check_anonymity(bot.channels_data, msg.channel.id):
+        names["channel_name"] = msg.channel.name
+    else:
+        names["channel_name"] = '匿名チャンネル'
+    if not await bot.check.check_anonymity(bot.users_data, msg.author.id):
+        names["user_name"] = msg.author.display_name
+        names["user_icon"] = msg.author.avatar_url
+    else:
+        names["user_name"] = '匿名ユーザー'
+        names["user_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
     return names
+
 
 async def get_embed_type(bot, message):
     user_data = bot.users_data.get(str(message.author.id))
     if user_data:
         return user_data.get('embed_type')
-    '''
-    role
-    '''
+    for role in message.author.roles:
+        role_data = bot.roles_data.get(str(role.id))
+        if role_data:
+            return role_data.get('embed_type')
     channel_data = bot.channels_data.get(str(message.channel.id))
     if channel_data:
         return channel_data.get('embed_type')
     if message.channel.category:
         category_data = bot.categories_data.get(str(message.channel.category_id))
-        if channel_data:
-            return channel_data.get('embed_type')
+        if category_data:
+            return category_data.get('embed_type')
     guild_data = bot.guilds_data.get(str(message.guild.id))
     if guild_data:
         return guild_data.get('embed_type')
     return 1
+
 
 class Compose:
     async def type_1(msg, message, names):
