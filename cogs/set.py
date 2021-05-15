@@ -166,6 +166,10 @@ class Set(commands.Cog):
                 except asyncio.TimeoutError:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_type"] = int(embed_type.content)
+                try:
+                    await embed_type.delete()
+                except Exception:
+                    pass
                 await s.delete()
             elif int(num.content) == 4:
                 s = await ctx.send('embed_colorを16進数で送信してください。')
@@ -174,6 +178,10 @@ class Set(commands.Cog):
                 except asyncio.TimeoutError:
                     return await m.edit(embed=self.timeout)
                 target_dict["embed_color"] = int(embed_color.content)
+                try:
+                    await embed_color.delete()
+                except Exception:
+                    pass
                 await s.delete()
             elif int(num.content) == 5:
                 s = await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
@@ -185,6 +193,10 @@ class Set(commands.Cog):
                     target_dict["allow"].append(int(allow_num.content))
                 else:
                     target_dict["allow"].remove(int(allow_num.content))
+                try:
+                    await allow_num.delete()
+                except Exception:
+                    pass
                 await s.delete()
             else:
                 await num.add_reaction('\U00002753')

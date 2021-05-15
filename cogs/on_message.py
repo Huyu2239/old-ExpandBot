@@ -32,6 +32,10 @@ class Expand(commands.Cog):
             )
             if msg is None:
                 continue
+            if await self.bot.check.check_mute(self.bot.mute_data, message):
+                msg_allow = await self.bot.check.check_allow(self.bot, message, msg)
+                if msg_allow is False:
+                    continue
             if message.guild.id != int(ids['guild']):
                 msg_hidden = await self.bot.check.check_hidden(self.bot, msg)
                 if msg_hidden is True:
@@ -57,9 +61,6 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        if await self.bot.check.check_mute(self.bot.mute_data, message):
-            return
-
         msgs = await self.find_msgs(message)
         if msgs is None:
             return
