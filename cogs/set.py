@@ -76,7 +76,7 @@ class Set(commands.Cog):
         ]
     )
     async def slash_say(self, ctx: SlashContext, target, category=None, role=None, channel=None):
-        if await self.bot.check.check_com_per is False:
+        if await self.bot.check.com_per is False:
             return
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))

@@ -1,4 +1,3 @@
-import json
 import os
 
 import discord
@@ -33,10 +32,10 @@ class Mybot(commands.Bot):
         self.remove_command('help')
         self.data_directory = data_directory
 
-        self.check = lib.check
+        self.Check = lib.check.Check
         self.database = lib.database
         self.embed = lib.embed
-        
+
         self.slash_client = SlashCommand(self, sync_commands=True)
 
         self.log_ch_id = 830233567215747132
@@ -53,7 +52,6 @@ class Mybot(commands.Bot):
         self.channels_data = {}
         self.roles_data = {}
         self.users_data = {}
-
 
     async def on_ready(self):
         for cog in os.listdir("./cogs"):
