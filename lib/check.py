@@ -1,3 +1,14 @@
+async def check_com_per(ctx, target):
+    if target != 5:
+        if ctx.guild is None:
+            await ctx.send('ユーザー設定以外はDMで実行できません。')
+            return False
+        if not ctx.author.guild_permissions.manage_guild:
+            await ctx.send()
+            return False
+    return True
+
+
 async def check_mute(mute_data, message):
     num = 1
     if message.guild.id in mute_data.get('guilds'):

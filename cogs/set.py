@@ -76,11 +76,8 @@ class Set(commands.Cog):
         ]
     )
     async def slash_say(self, ctx: SlashContext, target, category=None, role=None, channel=None):
-        if ctx.guild is None and target != 5:
+        if await self.bot.check.check_com_per is False:
             return
-        if target != 5:
-            if not ctx.author.guild_permissions.manage_guild:
-                return
         if target == 1:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             if target_dict is None:
