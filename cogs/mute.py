@@ -110,7 +110,7 @@ class Mute(commands.Cog):
         ]
     )
     async def slash_say(self, ctx: SlashContext, target, category=None, channel=None, role=None):
-        if await self.bot.check.check_com_per(ctx, target) is False:
+        if await self.bot.Check.com_per(ctx, target) is False:
             return
         msg = str()
         if target == 1:

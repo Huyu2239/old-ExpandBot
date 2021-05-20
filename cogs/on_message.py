@@ -14,7 +14,7 @@ class Expand(commands.Cog):
     message: on_messageの引数によるMessageObject
     msg(msgs): 引用されたMessageObject
     m :botが送信したMessageObject
-    check_hoge: 当てはまる時にTrue
+    Check.hoge: 当てはまる時にTrue
     '''
     def __init__(self, bot):
         self.bot = bot
@@ -32,14 +32,14 @@ class Expand(commands.Cog):
             )
             if msg is None:
                 continue
-            if await self.bot.check.check_mute(self.bot.mute_data, message):
-                msg_allow = await self.bot.check.check_allow(self.bot, msg, message)
+            if await self.bot.Check.mute(self.bot.mute_data, message):
+                msg_allow = await self.bot.Check.allow(self.bot, msg, message)
                 if msg_allow is False:
                     continue
             if message.guild.id != int(ids['guild']):
-                msg_hidden = await self.bot.check.check_hidden(self.bot, msg)
+                msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    msg_allow = await self.bot.check.check_allow(self.bot, message, msg)
+                    msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                     if msg_allow is False:
                         continue
             msgs.append(msg)
