@@ -65,17 +65,33 @@ class Expand(commands.Cog):
         if msgs is None:
             return
         for msg in msgs:
+            sent_emsgs = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
-            await message.channel.send(embed=embed_em[0])
+            sent_emsgs.append(await message.channel.send(embed=embed_em[0]))
             if len(msg.attachments) >= 2:
                 for attachment in msg.attachments[1:]:
                     embed = discord.Embed()
                     embed.set_image(
                         url=attachment.proxy_url
                     )
-                    await message.channel.send(embed=embed)
+                    sent_emsgs.append(await message.channel.send(embed=embed))
+
             for embed in msg.embeds:
-                await message.channel.send(embed=embed)
+                sent_emsgs.append(await message.channel.send(embed=embed))
+
+            main_message = sent_emsgs.pop(0)
+            main_embed = main_message.embeds[0]
+            extra_messages = ",".join([str(emsg.id) for emsg in sent_emsgs])
+            url = "{0.jump_url}?base_aid={1.id}&aid={2.id}&extra={3}".format(
+                message, message.author, msg.author, extra_messages)
+            if url.endswith('='):
+                url += '0'
+            main_embed.set_author(
+                name=main_embed.author.name,
+                icon_url=main_embed.author.icon_url,
+                url=url
+            )
+            await main_message.edit(embed=main_embed)
 
 
 def setup(bot):
