@@ -82,10 +82,7 @@ class Expand(commands.Cog):
             main_message = sent_emsgs.pop(0)
             main_embed = main_message.embeds[0]
             extra_messages = ",".join([str(emsg.id) for emsg in sent_emsgs])
-            url = "{0.jump_url}?base_aid={1.id}&aid={2.id}&extra={3}".format(
-                message, message.author, msg.author, extra_messages)
-            if url.endswith('='):
-                url += '0'
+            url = f'{main_embed.author.url}?{extra_messages}'
             main_embed.set_author(
                 name=main_embed.author.name,
                 icon_url=main_embed.author.icon_url,

@@ -1,30 +1,20 @@
 from discord.ext import commands
-import re
-
-regex_discord_message_url = (
-    '(?!<)https://(ptb.|canary.)?discord(app)?.com/channels/'
-    '(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})(?!>)'
-)
-regex_extra_url = (
-    r'\?base_aid=(?P<base_author_id>[0-9]{18})'
-    '&aid=(?P<author_id>[0-9]{18})'
-    '&extra=(?P<extra_messages>[0-9,]+)'
-)
 
 
 class Del(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def from_jump_url(self, url):
-        print(url)
-        base_url_match = re.match(regex_discord_message_url + regex_extra_url, url)
-        data = base_url_match.groupdict()
-        return {
-            "base_author_id": int(data["base_author_id"]),
-            "author_id": int(data["author_id"]),
-            "extra_messages": [int(_id) for _id in data["extra_messages"].split(",")]
+    async def get_data_with_embed(self, target_embed):
+        message_list = target_embed.url.split('?')
+        msg_list = target_embed.author.url.split('?')
+        data = {
+            "base_author_id": int(message_list[1]),
+            "author_id": int(msg_list[1])
         }
+        if len(msg_list) == 3:
+            data["extra_messages"] = [int(_id) for _id in msg_list[2].split(",")]
+        return data
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
@@ -35,18 +25,17 @@ class Del(commands.Cog):
             return
 
         target_embed = msg.embeds[0]
-        if getattr(target_embed.author, "url", None) is None:
+        if getattr(target_embed.author, "url", None) is None or not target_embed.url:
             return
-        data = await self.from_jump_url(target_embed.author.url)
+        data = await self.get_data_with_embed(target_embed)
         if not (data["base_author_id"] == payload.member.id or data["author_id"] == payload.member.id):
             return
+        if data.get('extra_messages'):
+            for message_id in data["extra_messages"]:
+                extra_message = await msg.channel.fetch_message(message_id)
+                if extra_message is not None:
+                    await extra_message.delete()
         await msg.delete()
-        if data["extra_messages"] == '0':
-            return
-        for message_id in data["extra_messages"]:
-            extra_message = await msg.channel.fetch_message(message_id)
-            if extra_message is not None:
-                await extra_message.delete()
 
 
 def setup(bot):
