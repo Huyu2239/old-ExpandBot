@@ -79,10 +79,12 @@ class Compose:
         embed = Embed(
             description=msg.content,
             timestamp=msg.created_at,
+            url=f'{message.jump_url}?{message.author.id}'
         )
         embed.set_author(
             name=names["user_name"],
-            icon_url=names["user_icon"]
+            icon_url=names["user_icon"],
+            url=f'{msg.jump_url}?{msg.author.id}'
         )
         if names.get('category_name') is None:
             channel_txt = f'#{names["channel_name"]}'
