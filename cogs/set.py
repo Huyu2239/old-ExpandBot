@@ -52,30 +52,12 @@ class Set(commands.Cog):
                 option_type=4, required=True,
                 choices=[
                     create_choice(name='server', value=1),
-                    create_choice(name='category', value=2),
-                    create_choice(name='channel', value=3),
-                    create_choice(name='role', value=4),
-                    create_choice(name='user', value=5)
+                    create_choice(name='user', value=2)
                 ]
-            ),
-            create_option(
-                name='category',
-                description='設定するカテゴリーを選択',
-                option_type=7, required=False
-            ),
-            create_option(
-                name='channel',
-                description='設定するチャンネルを選択',
-                option_type=7, required=False
-            ),
-            create_option(
-                name='role',
-                description='設定するロールを選択',
-                option_type=8, required=False
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, category=None, role=None, channel=None):
+    async def slash_say(self, ctx: SlashContext, target):
         if await self.bot.Check.com_per(ctx, target) is False:
             return
         if target == 1:
@@ -85,47 +67,11 @@ class Set(commands.Cog):
                 target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             target_name = f'Server: {ctx.guild.name}'
         if target == 2:
-            if category:
-                target_dict = self.bot.categories_data.get(str(category.id))
-                if target_dict is None:
-                    await self.bot.database.write_new_data(self.bot.categories_data, category.id)
-                    target_dict = self.bot.categories_data.get(str(category.id))
-                target_name = f'Category: <#{category.id}>'
-            else:
-                if not ctx.channel.category:
-                    return await ctx.send('このコマンドをカテゴリー外チャンネルで実行する際は`category`オプションが必要です。')
-                target_dict = self.bot.channels_data.get(str(ctx.channel.category_id))
-                if target_dict is None:
-                    await self.bot.database.write_new_data(self.bot.categories_data, ctx.channel.category_id)
-                    target_dict = self.bot.categories_data.get(str(ctx.channel.category_id))
-                target_name = f'Category: <#{ctx.channel.category_id}>'
-        if target == 3:
-            if channel:
-                target_dict = self.bot.channels_data.get(str(channel.id))
-                if target_dict is None:
-                    await self.bot.database.write_new_data(self.bot.channels_data. channel.id)
-                    target_dict = self.bot.channels_data.get(str(channel.id))
-                target_name = f'TextChannel: <#{channel.id}>'
-            else:
-                target_dict = self.bot.channels_data.get(str(ctx.channel.id))
-                if target_dict is None:
-                    await self.bot.database.write_new_data(self.bot.channels_data, ctx.channel.id)
-                    target_dict = self.bot.channels_data.get(str(ctx.channel.id))
-                target_name = f'TextChannel: <#{ctx.channel.id}>'
-        if target == 4:
-            if not role:
-                return
-            target_dict = self.bot.roles_data.get(str(role.id))
-            if target_dict is None:
-                await self.bot.database.write_new_data(self.bot.roles_data, role.id)
-                target_dict = self.bot.roles_data.get(str(role.id))
-            target_name = f'Role: {role.name}'
-        if target == 5:
             target_dict = self.bot.users_data.get(str(ctx.author.id))
             if target_dict is None:
                 await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
-            target_name = f'User: <@{ctx.author.id}>'
+            target_name = f'User: @{str(ctx.author)}'
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
         while True:
             def check_int(m):
@@ -195,9 +141,6 @@ class Set(commands.Cog):
                 except Exception:
                     pass
                 await s.delete()
-            else:
-                await num.add_reaction('\U00002753')
-                continue
             try:
                 await num.delete()
             except Exception:
