@@ -1,6 +1,6 @@
 class Check:
     async def com_per(ctx, target):
-        if target != 5:
+        if target == 1:
             if ctx.guild is None:
                 await ctx.send('ユーザー設定以外はDMで実行できません。')
                 return False
@@ -33,25 +33,11 @@ class Check:
         user_data = bot.users_data.get(str(m.author.id))
         if user_data:
             return user_data.get('hidden')
-        # roles
-        for role in m.author.roles:
-            role_data = bot.roles_data.get(str(role.id))
-            if role_data:
-                return role_data.get('hidden')
-        # channels
-        channel_data = bot.channels_data.get(str(m.channel.id))
-        if channel_data:
-            return channel_data.get('hidden')
-        # categories
-        if m.channel.category:
-            category_data = bot.categories_data.get(str(m.channel.category_id))
-            if category_data:
-                return category_data.get('hidden')
         # guilds
         guild_data = bot.guilds_data.get(str(m.guild.id))
         if guild_data:
             return guild_data.get('hidden')
-        return False
+        return True
 
     async def anonymity(target_data, target_id):
         target_dict = target_data.get(str(target_id))
@@ -68,29 +54,11 @@ class Check:
         if msg_guild_data:
             valid_elements = set(message_data_list) & set(msg_guild_data.get('allow'))
             num *= (-1)**len(valid_elements)
-        # category
-        msg_categories_data = bot.categories_data.get(str(msg.channel.category_id))
-        if msg_categories_data:
-            valid_elements = set(message_data_list) & set(msg_categories_data.get('allow'))
-            num *= (-1)**len(valid_elements)
-        # channel
-        msg_channel_data = bot.channels_data.get(str(msg.channel.id))
-        if msg_channel_data:
-            valid_elements = set(message_data_list) & set(msg_channel_data.get('allow'))
-            num *= (-1)**len(valid_elements)
-        # role
-        for role in msg.author.roles:
-            msg_role_data = bot.roles_data.get(str(role.id))
-            if msg_role_data:
-                valid_elements = set(message_data_list) & set(msg_role_data.get('allow'))
-                num *= (-1)**len(valid_elements)
         # user
         msg_user_data = bot.users_data.get(str(msg.author.id))
         if msg_user_data:
             valid_elements = set(message_data_list) & set(msg_user_data.get('allow'))
             num *= (-1)**len(valid_elements)
-        else:
-            return False
 
         if num == -1:
             return True

@@ -48,9 +48,6 @@ class Mybot(commands.Bot):
             "users": []
         }
         self.guilds_data = {}
-        self.categories_data = {}
-        self.channels_data = {}
-        self.roles_data = {}
         self.users_data = {}
 
     async def on_ready(self):

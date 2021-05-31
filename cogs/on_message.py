@@ -32,16 +32,13 @@ class Expand(commands.Cog):
             )
             if msg is None:
                 continue
-            if await self.bot.Check.mute(self.bot.mute_data, message):
-                msg_allow = await self.bot.Check.allow(self.bot, msg, message)
+            if message.guild.id != int(ids['guild']):
+                msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
                     continue
-            if message.guild.id != int(ids['guild']):
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    msg_allow = await self.bot.Check.allow(self.bot, message, msg)
-                    if msg_allow is False:
-                        continue
+                    continue
             msgs.append(msg)
         if len(msgs) != len(re.findall(regex_discord_message_url, message_text)):
             await message.add_reaction('\U0000274c')
@@ -61,27 +58,29 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
+        if await self.bot.Check.mute(self.bot.mute_data, message):
+            return
         msgs = await self.find_msgs(message)
         if msgs is None:
             return
         for msg in msgs:
-            sent_emsgs = []
+            sent_ms = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
-            sent_emsgs.append(await message.channel.send(embed=embed_em[0]))
+            sent_ms.append(await message.channel.send(embed=embed_em[0]))
             if len(msg.attachments) >= 2:
                 for attachment in msg.attachments[1:]:
                     embed = discord.Embed()
                     embed.set_image(
                         url=attachment.proxy_url
                     )
-                    sent_emsgs.append(await message.channel.send(embed=embed))
+                    sent_ms.append(await message.channel.send(embed=embed))
 
             for embed in msg.embeds:
-                sent_emsgs.append(await message.channel.send(embed=embed))
+                sent_ms.append(await message.channel.send(embed=embed))
 
-            main_message = sent_emsgs.pop(0)
+            main_message = sent_ms.pop(0)
             main_embed = main_message.embeds[0]
-            extra_messages = ",".join([str(emsg.id) for emsg in sent_emsgs])
+            extra_messages = ",".join([str(emsg.id) for emsg in sent_ms])
             url = f'{main_embed.author.url}?{extra_messages}'
             main_embed.set_author(
                 name=main_embed.author.name,
