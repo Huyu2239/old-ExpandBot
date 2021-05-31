@@ -44,7 +44,7 @@ class Check:
         if target_dict:
             return target_dict.get('anonymity')
         else:
-            return True
+            return None
 
     async def allow(bot, message, msg):
         num = 1

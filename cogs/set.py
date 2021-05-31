@@ -57,7 +57,7 @@ class Set(commands.Cog):
             )
         ]
     )
-    async def slash_say(self, ctx: SlashContext, target, category=None, role=None, channel=None):
+    async def slash_say(self, ctx: SlashContext, target):
         if await self.bot.Check.com_per(ctx, target) is False:
             return
         if target == 1:
@@ -77,10 +77,8 @@ class Set(commands.Cog):
             def check_int(m):
                 if m.author == ctx.author and m.channel == ctx.channel:
                     try:
-                        num = int(m.content)
+                        int(m.content)
                     except SyntaxError:
-                        return False
-                    if num > 5:
                         return False
                     return True
                 else:

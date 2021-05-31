@@ -10,7 +10,7 @@ async def compose_embed(bot, msg, message):
         "guild_icon": msg.guild.icon_url
     }
     if msg.guild != message.guild:
-        names = await update_names(bot, msg, message, names)
+        names = await update_names(bot, msg, names)
     embed_type = await get_embed_type(bot, message)
     if embed_type == 1:
         embed = await Compose.type_1(msg, message, names)
@@ -19,17 +19,23 @@ async def compose_embed(bot, msg, message):
     return embed, embed_type
 
 
-async def update_names(bot, msg, message, names):
+async def update_names(bot, msg, names):
     guild_anonymity = await bot.check.anonymity(bot.guilds_data, msg.guild.id)
     user_anonymity = await bot.check.anonymity(bot.users_data, msg.author.id)
 
-    if guild_anonymity or user_anonymity:
+    if user_anonymity is None:
+        if guild_anonymity:
+            names["user_name"] = '匿名ユーザー'
+            names["user_icon"] = 'https://discord.com/assets/7c8f476123d28d103efe381543274c25.png'
+        else:
+            names["user_name"] = msg.author.display_name
+            names["user_icon"] = msg.author.avatar_url
+    if user_anonymity is True:
         names["user_name"] = '匿名ユーザー'
-        names["user_icon"] = 'https://cdn.discordapp.com/embed/avatars/0.png'
-    else:
+        names["user_icon"] = 'https://discord.com/assets/7c8f476123d28d103efe381543274c25.png'
+    if user_anonymity is False:
         names["user_name"] = msg.author.display_name
         names["user_icon"] = msg.author.avatar_url
-
     return names
 
 
