@@ -41,7 +41,7 @@ class Expand(commands.Cog):
             if message.guild.id != int(ids['guild']):
                 msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
-                    error.append({'url': url, 'content': 'NotAllowded'})
+                    error.append({'url': url, 'content': 'NotAllowed'})
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
