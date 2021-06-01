@@ -12,10 +12,11 @@ async def compose_embed(bot, msg, message):
     if msg.guild != message.guild:
         names = await update_names(bot, msg, names)
     embed_type = await get_embed_type(bot, message)
+    embed_color = await get_embed_color(bot, message)
     if embed_type == 1:
-        embed = await Compose.type_1(msg, message, names)
+        embed = await Compose.type_1(msg, message, names, embed_color)
     else:
-        embed = await Compose.type_1(msg, message, names)
+        embed = await Compose.type_1(msg, message, names, embed_color)
     return embed, embed_type
 
 
@@ -49,12 +50,23 @@ async def get_embed_type(bot, message):
     return 1
 
 
+async def get_embed_color(bot, message):
+    user_data = bot.users_data.get(str(message.author.id))
+    if user_data:
+        return user_data.get('embed_color')
+    guild_data = bot.guilds_data.get(str(message.guild.id))
+    if guild_data:
+        return guild_data.get('embed_color')
+    return '000000'
+
+
 class Compose:
-    async def type_1(msg, message, names):
+    async def type_1(msg, message, names, embed_color):
         embed = Embed(
             description=msg.content,
             timestamp=msg.created_at,
-            url=f'{message.jump_url}?{message.author.id}'
+            url=f'{message.jump_url}?{message.author.id}',
+            colour=int(f'0x{embed_color}', 16)
         )
         embed.set_author(
             name=names["user_name"],

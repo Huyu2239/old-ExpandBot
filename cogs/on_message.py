@@ -2,6 +2,7 @@ import re
 
 import discord
 from discord.ext import commands
+import asyncio
 
 regex_discord_message_url = (
     'https://(ptb.|canary.)?discord(app)?.com/channels/'
@@ -21,37 +22,42 @@ class Expand(commands.Cog):
 
     async def find_msgs(self, message):
         msgs = list()
+        error = list()
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
-        for ids in re.finditer(regex_discord_message_url, message_text):
+        for url_mutch in re.finditer(regex_discord_message_url, message_text):
+            ids = url_mutch.groupdict()
+            url = url_mutch[0]
             if self.bot.get_guild(int(ids['guild'])) is None:
+                error.append({'url': url, 'content': 'GuildNotFound'})
                 continue
             msg = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids['guild'])),
                 msg_channel_id=int(ids['channel']),
-                msg_id=int(ids['message']),
+                msg_id=int(ids['message'])
             )
-            if msg is None:
+            if isinstance(msg, str):
+                error.append({'url': url, 'content': msg})
                 continue
             if message.guild.id != int(ids['guild']):
                 msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
+                    error.append({'url': url, 'content': 'NotAllowded'})
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
+                    error.append({'url': url, 'content': 'HiddenMessage'})
                     continue
             msgs.append(msg)
-        if len(msgs) != len(re.findall(regex_discord_message_url, message_text)):
-            await message.add_reaction('\U0000274c')
-        return msgs
+        return msgs, error
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
         if channel is None:
-            return
+            return 'ChannelNotFound'
         try:
             msg = await channel.fetch_message(msg_id)
         except Exception:
-            return
+            return 'MessageNotFound'
         return msg
 
     @commands.Cog.listener()
@@ -60,9 +66,7 @@ class Expand(commands.Cog):
             return
         if await self.bot.Check.mute(self.bot.mute_data, message):
             return
-        msgs = await self.find_msgs(message)
-        if msgs is None:
-            return
+        msgs, error = await self.find_msgs(message)
         for msg in msgs:
             sent_ms = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
@@ -88,6 +92,26 @@ class Expand(commands.Cog):
                 url=url
             )
             await main_message.edit(embed=main_embed)
+        if not error:
+            return
+
+        def reaction_check(reaction, user):
+            if user.bot or reaction.message.id != message.id:
+                return False
+            return True
+
+        await message.add_reaction('\U0000274c')
+        try:
+            await self.bot.wait_for("reaction_add", timeout=15, check=reaction_check)
+        except asyncio.TimeoutError:
+            return await message.remove_reaction('\U0000274c', member=message.guild.me)
+        embed = discord.Embed(title='ERROR', colour=discord.Color.red())
+        for e in error:
+            embed.add_field(
+                name=e.get('content'),
+                value=e.get('url')
+            )
+        await message.channel.send(embed=embed)
 
 
 def setup(bot):

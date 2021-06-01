@@ -6,7 +6,7 @@ async def write_new_data(target_dict: dict, target_id):
         'hidden': True,
         'anonymity': True,
         'embed_type': 1,
-        'embed_color': 0,
+        'embed_color': '000000',
         'allow': []
     }
     target_dict[str(target_id)] = tmp_dict
