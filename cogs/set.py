@@ -102,7 +102,10 @@ class Set(commands.Cog):
                 col = m.content.replace('0x', '').replace('#', '')
                 if len(col) != 6:
                     return False
-                if int(col, 16) > int('ffffff', 16):
+                try:
+                    if int(col, 16) > int('ffffff', 16):
+                        return False
+                except ValueError:
                     return False
                 return True
             return False

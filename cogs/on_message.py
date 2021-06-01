@@ -24,17 +24,16 @@ class Expand(commands.Cog):
         msgs = list()
         error = list()
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
-        urls = re.findall(regex_discord_message_url, message_text)
-        for url in urls:
-            ids = re.match(regex_discord_message_url, url)
+        for url_mutch in re.finditer(regex_discord_message_url, message_text):
+            ids = url_mutch.groupdict()
+            url = url_mutch[0]
             if self.bot.get_guild(int(ids['guild'])) is None:
                 error.append({'url': url, 'content': 'GuildNotFound'})
                 continue
             msg = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids['guild'])),
                 msg_channel_id=int(ids['channel']),
-                msg_id=int(ids['message']),
-                error=error
+                msg_id=int(ids['message'])
             )
             if isinstance(msg, str):
                 error.append({'url': url, 'content': msg})
@@ -97,15 +96,16 @@ class Expand(commands.Cog):
             return
 
         def reaction_check(reaction, user):
-            if reaction.message.id == message.id:
-                return True
+            if user.bot or reaction.message.id != message.id:
+                return False
+            return True
 
         await message.add_reaction('\U0000274c')
         try:
-            self.bot.wait_for('reaction', timeout=30, check=reaction_check)
+            await self.bot.wait_for("reaction_add", timeout=15, check=reaction_check)
         except asyncio.TimeoutError:
-            return await message.remove_reaction('\U0000274c')
-        embed = discord.Embed(title='ERROR', colour=discord.colour.red())
+            return await message.remove_reaction('\U0000274c', member=message.guild.me)
+        embed = discord.Embed(title='ERROR', colour=discord.Color.red())
         for e in error:
             embed.add_field(
                 name=e.get('content'),

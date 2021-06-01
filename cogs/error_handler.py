@@ -91,7 +91,7 @@ class CommandErrorHandler(commands.Cog):
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
 
         if isinstance(error, asyncio.TimeoutError):
-            return await ctx.send(embed=self.bot.timeout)
+            return await ctx.send(embed=self.timeout)
 
         embed = discord.Embed(title='ERROR', colour=discord.Colour.red())
         embed.add_field(
