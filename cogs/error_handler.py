@@ -2,18 +2,31 @@ import traceback
 
 import discord
 from discord.ext import commands
+import asyncio
 
 
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.timeout = discord.Embed(
+            title='ERROR',
+            description='タイムアウトしました。',
+            color=discord.Color.red()
+        )
+
+    async def error_log(self, str):
+        try:
+            await self.bot.get_channel(self.bot.log_ch_id).send(str)
+        except discord.errors.HTTPException:
+            await self.bot.get_channel(self.bot.log_ch_id).send('エラー文が文字数を超過しました')
+            print(str)  # stderr
 
     @commands.Cog.listener()
     async def on_error(self, ctx, error):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-        print(error_str)
         await ctx.add_reaction('\U0000274c')
+        await self.error_log(error_str)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -63,28 +76,33 @@ class CommandErrorHandler(commands.Cog):
                 name='UnknownError',
                 value=f"予期しないエラーが発生しました。\n必ず報告してください。\n```py\n{error_str}```"
             )
+
         try:
             await ctx.send('エラーが発生しました\nスクショなどの情報と一緒にサポートサーバーまで連絡してください', embed=embed)
         except discord.errors.HTTPException:
             await ctx.send('エラーが発生しました\nスクショなどの情報と一緒にサポートサーバーまで連絡してください')
+
         error_msg = f"```py\n{error_str}\n```\ncommand={ctx.message.content}"
-        try:
-            await self.bot.get_channel(self.bot.log_ch_id).send(error_msg)
-        except discord.errors.HTTPException:
-            await self.bot.get_channel(self.bot.log_ch_id).send('文字数を超過しました')
-        print(error_msg)
+        await self.error_log(error_msg)
 
     @commands.Cog.listener()
     async def on_slash_command_error(self, ctx, error):
         orig_error = getattr(error, "original", error)
         error_str = ''.join(traceback.TracebackException.from_exception(orig_error).format())
-        print(error_str)  # stderr
-        embed = discord.Embed(title='ERROR', color=discord.Colour.red())
+
+        if isinstance(error, asyncio.TimeoutError):
+            return await ctx.send(embed=self.bot.timeout)
+
+        embed = discord.Embed(title='ERROR', colour=discord.Colour.red())
         embed.add_field(
             name='内部エラー\nサポートサーバーまでご連絡ください',
             value=f'```py\n{error_str}```'
         )
-        await ctx.send(embed)
+        try:
+            await ctx.send(embed=embed)
+        except discord.errors.HTTPException:
+            await ctx.send('エラー発生')
+        await self.error_log(f'```py\n{error_str}```')
 
 
 def setup(bot):

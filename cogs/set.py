@@ -18,7 +18,7 @@ class Set(commands.Cog):
         embed = discord.Embed(
             title=target_name,
             description='設定する項目を番号で選択してください。\n0: 終了',
-            color=target_dict.get("embed_color")
+            colour=int(f'0x{target_dict.get("embed_color")}', 16)
         )
         embed.add_field(
             name='1: hidden',
@@ -34,7 +34,7 @@ class Set(commands.Cog):
         )
         embed.add_field(
             name='4: embed_color',
-            value=f'```\n{target_dict.get("embed_color")}\n```'
+            value=f'```\n#{target_dict.get("embed_color")}\n```'
         )
         embed.add_field(
             name='5: allow',
@@ -73,65 +73,95 @@ class Set(commands.Cog):
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
             target_name = f'User: @{str(ctx.author)}'
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
-        while True:
-            def check_int(m):
-                if m.author == ctx.author and m.channel == ctx.channel:
-                    try:
-                        int(m.content)
-                    except SyntaxError:
-                        return False
-                    return True
-                else:
-                    return False
 
-            try:
-                num = await self.bot.wait_for('message', timeout=60, check=check_int)
-            except asyncio.TimeoutError:
-                return await m.edit(embed=self.timeout)
+        # check_funcs
+        def check_val(m):
+            if m.author == ctx.author and m.channel == ctx.channel:
+                try:
+                    val = int(m.content)
+                except SyntaxError:
+                    return False
+                if val > 5:
+                    return False
+                return True
+            return False
+
+        def check_type(m):
+            if m.author == ctx.author and m.channel == ctx.channel:
+                try:
+                    type = int(m.content)
+                except SyntaxError:
+                    return False
+                if type > 1:
+                    return False
+                return True
+            return False
+
+        def check_col(m):
+            if m.author == ctx.author and m.channel == ctx.channel:
+                col = m.content.replace('0x', '').replace('#', '')
+                if len(col) != 6:
+                    return False
+                if int(col, 16) > int('ffffff', 16):
+                    return False
+                return True
+            return False
+
+        def check_id(m):
+            if m.author == ctx.author and m.channel == ctx.channel:
+                try:
+                    str_id = str(m.content)
+                except SyntaxError:
+                    return False
+                if len(str_id) != 18:
+                    return False
+                return True
+            return False
+
+        # 設定ループ
+        while True:
+            num = await self.bot.wait_for('message', timeout=15, check=check_val)
+
             if int(num.content) == 0:
-                await m.edit(content='終了', embed=None)
+                await m.edit(content='終了')
                 await num.add_reaction('\U00002705')
                 break
+
             elif int(num.content) == 1:
                 if target_dict.get('hidden'):
                     target_dict["hidden"] = False
                 else:
                     target_dict["hidden"] = True
+
             elif int(num.content) == 2:
                 if target_dict.get('anonymity'):
                     target_dict["anonymity"] = False
                 else:
                     target_dict["anonymity"] = True
+
             elif int(num.content) == 3:
                 s = await ctx.send('embed_typeを送信してください。(1~1)')
-                try:
-                    embed_type = await self.bot.wait_for('message', timeout=60, check=check_int)
-                except asyncio.TimeoutError:
-                    return await m.edit(embed=self.timeout)
+                embed_type = await self.bot.wait_for('message', timeout=15, check=check_type)
                 target_dict["embed_type"] = int(embed_type.content)
                 try:
                     await embed_type.delete()
                 except Exception:
                     pass
                 await s.delete()
+
             elif int(num.content) == 4:
                 s = await ctx.send('embed_colorを16進数で送信してください。')
-                try:
-                    embed_color = await self.bot.wait_for('message', timeout=60, check=check_int)
-                except asyncio.TimeoutError:
-                    return await m.edit(embed=self.timeout)
-                target_dict["embed_color"] = int(embed_color.content)
+                embed_color = await self.bot.wait_for('message', timeout=15, check=check_col)
+                target_dict["embed_color"] = embed_color.content.replace('0x', '').replace('#', '')
                 try:
                     await embed_color.delete()
                 except Exception:
                     pass
                 await s.delete()
+
             elif int(num.content) == 5:
                 s = await ctx.send('引用を許可する場所、アカウントのIDを送信してください。')
-                try:
-                    allow_num = await self.bot.wait_for('message', timeout=60, check=check_int)
-                except asyncio.TimeoutError:
-                    return await m.edit(embed=self.timeout)
+                allow_num = await self.bot.wait_for('message', check=check_id)
                 if int(allow_num.content) not in target_dict.get('allow'):
                     target_dict["allow"].append(int(allow_num.content))
                 else:
@@ -141,11 +171,13 @@ class Set(commands.Cog):
                 except Exception:
                     pass
                 await s.delete()
+
             try:
                 await num.delete()
             except Exception:
                 await num.add_reaction('\U00002705')
             await m.edit(embed=await self.compose_set_em(target_dict, target_name))
+        # 終了時
         await self.bot.database.write_all_data(self.bot)
 
 
