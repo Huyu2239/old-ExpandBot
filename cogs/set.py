@@ -67,10 +67,19 @@ class Set(commands.Cog):
                 target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             target_name = f'Server: {ctx.guild.name}'
         if target == 2:
-            target_dict = self.bot.users_data.get(str(ctx.author.id))
-            if target_dict is None:
-                await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
+            if ctx.guild is None:
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
+                if target_dict is None:
+                    await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
+                    target_dict = self.bot.users_data.get(str(ctx.author.id))
+            else:
+                guild_dict = self.bot.guilds_data.get(str(ctx.guild.id))
+                if guild_dict is None:
+                    return await ctx.send('サーバーの設定が存在しないため実行できません。')
+                target_dict = guild_dict.get(str(ctx.author.id))
+                if target_dict is None:
+                    await self.bot.database.write_new_data(guild_dict, ctx.author.id)
+                    target_dict = guild_dict.get(str(ctx.author.id))
             target_name = f'User: @{str(ctx.author)}'
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
 

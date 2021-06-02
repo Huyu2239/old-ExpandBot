@@ -9,7 +9,7 @@ import lib.embed
 class Reload(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        bot.check = lib.check.Check
+        bot.Check = lib.check.Check
         bot.database = lib.database
         bot.embed = lib.embed
 
@@ -34,7 +34,7 @@ class Reload(commands.Cog):
                     self.bot.reload_extension(f'cogs.{cog[:-3]}')
         if path == 'lib':
             reload(lib.check)
-            self.bot.check = lib.check.Check
+            self.bot.Check = lib.check.Check
             reload(lib.database)
             self.bot.database = lib.database
             reload(lib.embed)
