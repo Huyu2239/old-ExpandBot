@@ -133,20 +133,22 @@ class Help(commands.Cog):
     async def compose_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description="展開に関する設定を行います。",
+            description="\n```\n展開に関する設定を行います。\n```\n",
             color=discord.Colour.blue()
         )
         if ctx.guild is None:
             data = self.bot.users_data.get(str(ctx.author.id))
             set_em.add_field(
                 name='現在のユーザー設定',
-                value='変更はDMでのみ可能です。'
+                value='\n```\n変更はDMでのみ可能です。\n```\n',
+                inline=False
             )
         else:
             guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
             set_em.add_field(
                 name='現在のメンバー設定',
-                value='変更はサーバーでのみ可能です。'
+                value='\n```\n変更はサーバーでのみ可能です。\n```\n',
+                inline=False
             )
             if guild_data is None:
                 guild_data = {}
@@ -158,7 +160,8 @@ class Help(commands.Cog):
             if ctx.author.guild_permissions.manage_guild:
                 set_em.add_field(
                     name='現在のサーバー設定',
-                    value='変更はサーバー管理者のみ可能です。'
+                    value='\n```\n変更はサーバー管理者のみ可能です。\n```\n',
+                    inline=False
                 )
                 guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
                 await self.add_set_fields(set_em, guild_data)
@@ -183,7 +186,7 @@ class Help(commands.Cog):
         set_em.add_field(
             name='`embed_color`',
             value='メッセージのリンクが送信された際の埋め込みの色を指定できます。\n'
-                  f'```\nembed_type={data.get("embed_color")}\n```\n'
+                  f'```\nembed_type=#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
             name='`allow`',
