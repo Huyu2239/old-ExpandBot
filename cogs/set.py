@@ -72,6 +72,7 @@ class Set(commands.Cog):
                 if target_dict is None:
                     await self.bot.database.write_new_data(self.bot.users_data, ctx.author.id)
                     target_dict = self.bot.users_data.get(str(ctx.author.id))
+                target_name = f'User: @{str(ctx.author)}'
             else:
                 guild_dict = self.bot.guilds_data.get(str(ctx.guild.id))
                 if guild_dict is None:
@@ -80,7 +81,7 @@ class Set(commands.Cog):
                 if target_dict is None:
                     await self.bot.database.write_new_data(guild_dict, ctx.author.id)
                     target_dict = guild_dict.get(str(ctx.author.id))
-            target_name = f'User: @{str(ctx.author)}'
+                target_name = f'Member: @{str(ctx.author)}'
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
 
         # check_funcs
