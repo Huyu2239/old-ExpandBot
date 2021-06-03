@@ -10,12 +10,7 @@ class Help(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         asyncio.create_task(self.bot.slash.sync_all_commands())
-
-    def cog_unload(self):
-        self.bot.slash.remove_cog_commands(self)
-
-    async def compose_help_em(self):
-        help_em = [
+        self.help_em = [
             (
                 discord.Embed(
                     title="概要",
@@ -25,62 +20,79 @@ class Help(commands.Cog):
             ),
             (
                 discord.Embed(
-                    title="コマンド一覧",
-                    color=discord.Colour.blue()
-                )
-            )
-        ]
-        help_em[0].add_field(
-            name='URL一覧',
-            value="[サポートサーバー](https://discord.gg/CF49JQUnXV)\n[導入リンク](https://discord.com/api/oauth2/authorize?client_id=827863670507438130&permissions=85056&scope=bot%20applications.commands)"
-        )
-        help_em[0].add_field(
-            name='動作サーバー数',
-            value=f'{len(self.bot.guilds)}guilds'
-        )
-        help_em[0].add_field(
-            name='総ユーザー数',
-            value=f'{len(set(self.bot.get_all_members()))}users'
-        )
-        help_em[0].add_field(
-            name='動作環境',
-            value='[Tera-server](https://tera-server.com/)'
-        )
-        help_em[1].add_field(
-            name='`/help`',
-            value='このメッセージを送信します。'
-        )
-        help_em[1].add_field(
-            name='`/ping`',
-            value='pongを返します。'
-        )
-        help_em[1].add_field(
-            name='`/set`',
-            value='展開に関する設定をします。'
-        )
-        help_em[1].add_field(
-            name='`/mute`',
-            value='展開の無効化・有効化をします。'
-        )
-        return help_em
-
-    async def compose_com_em(self, ctx):
-        com_em = [
-            (
-                discord.Embed(
                     title="ping",
                     description="Botのレイテンシを返します。\n実行した人のレイテンシを返すものではありません。",
                     color=discord.Colour.blue()
                 )
-            ),
-            (
-                discord.Embed(
-                    title="mute",
-                    description="展開の無効化・有効化をします。",
-                    color=discord.Colour.blue()
-                )
             )
         ]
+        self.help_em[0].add_field(
+            name='URL一覧',
+            value="[サポートサーバー](https://discord.gg/CF49JQUnXV)\n[導入リンク](https://discord.com/api/oauth2/authorize?client_id=827863670507438130&permissions=85056&scope=bot%20applications.commands)"
+        )
+        self.help_em[0].add_field(
+            name='動作サーバー数',
+            value=f'{len(self.bot.guilds)}guilds'
+        )
+        self.help_em[0].add_field(
+            name='総ユーザー数',
+            value=f'{len(set(self.bot.get_all_members()))}users'
+        )
+        self.help_em[0].add_field(
+            name='動作環境',
+            value='[Tera-server](https://tera-server.com/)'
+        )
+
+    def cog_unload(self):
+        self.bot.slash.remove_cog_commands(self)
+
+    async def update_help_em(self):
+        self.help_em[0].remove_field(1)
+        self.help_em[0].remove_field(2)
+        self.help_em[0].set_field_at(
+            index=1,
+            name='動作サーバー数',
+            value=f'{len(self.bot.guilds)}guilds'
+        )
+        self.help_em[0].set_field_at(
+            index=2,
+            name='総ユーザー数',
+            value=f'{len(set(self.bot.get_all_members()))}users'
+        )
+
+    @commands.Cog.listener()
+    async def on_guild_join(self, guild):
+        await self.update_help_em()
+
+    @commands.Cog.listener()
+    async def on_guild_remove(self, guild):
+        await self.update_help_em()
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        await self.update_help_em()
+
+    @commands.Cog.listener()
+    async def on_member_leave(self, guild):
+        await self.update_help_em()
+
+    async def compose_mute_em(self, ctx):
+        mute_em = discord.Embed(
+            title="mute",
+            description="展開の無効化・有効化をします。",
+            color=discord.Colour.blue()
+        )
+        # user_mute
+        if ctx.author.id in self.bot.mute_data.get('users'):
+            user_mute = True
+        else:
+            user_mute = False
+        if ctx.guild is None:
+            mute_em.add_field(
+                name='`現在の設定`',
+                value=f'```\nuser_mute={user_mute}\n```\n'
+            )
+            return mute_em
         # guild_mute
         if ctx.guild.id in self.bot.mute_data.get('guilds'):
             server_mute = True
@@ -108,12 +120,7 @@ class Help(commands.Cog):
             role_mute = True
         else:
             role_mute = False
-        # user_mute
-        if ctx.author.id in self.bot.mute_data.get('users'):
-            user_mute = True
-        else:
-            user_mute = False
-        com_em[1].add_field(
+        mute_em.add_field(
             name='`現在の設定`',
             value=f'```\nserver_mute={server_mute}\n```\n'
                   f'```\ncategory_mute={category_mute}\n```\n'
@@ -121,20 +128,46 @@ class Help(commands.Cog):
                   f'```\nrole_mute={role_mute}\n```\n'
                   f'```\nuser_mute={user_mute}\n```\n'
         )
-        return com_em
+        return mute_em
 
     async def compose_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description="展開に関する設定を行います。",
+            description="\n```\n展開に関する設定を行います。\n```\n",
             color=discord.Colour.blue()
         )
-        if ctx.guild:
-            data = self.bot.guilds_data.get(str(ctx.guild.id))
-        else:
+        if ctx.guild is None:
             data = self.bot.users_data.get(str(ctx.author.id))
+            set_em.add_field(
+                name='現在のユーザー設定',
+                value='\n```\n変更はDMでのみ可能です。\n```\n',
+                inline=False
+            )
+        else:
+            guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
+            set_em.add_field(
+                name='現在のメンバー設定',
+                value='\n```\n変更はサーバーでのみ可能です。\n```\n',
+                inline=False
+            )
+            if guild_data is None:
+                guild_data = {}
+            data = guild_data.get(str(ctx.author.id))
         if data is None:
             data = {}
+        await self.add_set_fields(set_em, data)
+        if ctx.guild:
+            if ctx.author.guild_permissions.manage_guild:
+                set_em.add_field(
+                    name='現在のサーバー設定',
+                    value='\n```\n変更はサーバー管理者のみ可能です。\n```\n',
+                    inline=False
+                )
+                guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
+                await self.add_set_fields(set_em, guild_data)
+        return set_em
+
+    async def add_set_fields(self, set_em, data):
         set_em.add_field(
             name='`hidden`',
             value='メッセージのリンクがサーバー外で送信された際に、\nメッセージを保護して展開しないように設定できます。\n'
@@ -153,14 +186,13 @@ class Help(commands.Cog):
         set_em.add_field(
             name='`embed_color`',
             value='メッセージのリンクが送信された際の埋め込みの色を指定できます。\n'
-                  f'```\nembed_type={data.get("embed_color")}\n```\n'
+                  f'```\nembed_type=#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
             name='`allow`',
             value='メッセージのリンクがサーバー外で送信された際かつhiddenがtrueの場合、\n特別に展開を許可するサーバー、ユーザー、チャンネルを指定できます。\nhiddenがfalseの場合は関係なく展開されます。\n'
                   f'```\nallow={data.get("allow")}\n```\n'
         )
-        return set_em
 
     @cog_ext.cog_slash(
         name='help',
@@ -180,39 +212,15 @@ class Help(commands.Cog):
     )
     async def slash_say(self, ctx: SlashContext, command=None):
         if command is None:
-            # await ctx.respond(eat=True)
-            page = 0
-            help_em = await self.compose_help_em()
-            help_msg = await ctx.send(embed=help_em[page])
-            emoji = '➡'
-            await help_msg.add_reaction(emoji)
-            while True:
-                def reaction_check(reaction, user):
-                    if reaction.message.id == help_msg.id \
-                            and user == ctx.author:
-                        return reaction, user
-
-                try:
-                    reaction, user = await self.bot.wait_for("reaction_add", timeout=60.0, check=reaction_check)
-                    emoji = str(reaction.emoji)
-                except asyncio.TimeoutError:
-                    await help_msg.remove_reaction(emoji, self.bot.user)
-                    return
-                if page == len(help_em) - 1:
-                    page = 0
-                else:
-                    page += 1
-                await help_msg.edit(embed=help_em[page])
-            return
+            await ctx.send(embed=self.help_em[0])
         elif command == 1:
-            com_em = await self.compose_com_em(ctx)
-            await ctx.send(embed=com_em[0])
+            await ctx.send(embed=self.help_em[1])
         elif command == 2:
             set_em = await self.compose_set_em(ctx)
             await ctx.send(embed=set_em)
         elif command == 3:
-            com_em = await self.compose_com_em(ctx)
-            await ctx.send(embed=com_em[1])
+            mute_em = await self.compose_mute_em(ctx)
+            await ctx.send(embed=mute_em)
 
 
 def setup(bot):
