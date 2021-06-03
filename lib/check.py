@@ -29,11 +29,13 @@ class Check:
             return False
 
     async def hidden(bot, m):
-        user_data = bot.users_data.get(str(m.author.id))
+        # member, user, guild
         guild_data = bot.guilds_data.get(str(m.guild.id))
-        member_data = guild_data.get(str(m.author.id))
+        if guild_data:
+            member_data = guild_data.get(str(m.author.id))
         if member_data:
             return member_data.get('hidden')
+        user_data = bot.users_data.get(str(m.author.id))
         if user_data:
             return user_data.get('hidden')
         if guild_data:
