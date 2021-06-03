@@ -169,23 +169,23 @@ class Help(commands.Cog):
 
     async def add_set_fields(self, set_em, data):
         set_em.add_field(
-            name='[`hidden`]()',
+            name='[`hidden`](https://github.com/Huyu2239/ExpandBot/blob/add_docs/docs/set.md#hidden)',
             value=f'```\nhidden={data.get("hidden")}\n```\n'
         )
         set_em.add_field(
-            name='[`anonymity`]()',
+            name='[`anonymity`](https://github.com/Huyu2239/ExpandBot/blob/add_docs/docs/set.md#anonymity)',
             value=f'```\nanonymity={data.get("anonymous")}\n```\n'
         )
         set_em.add_field(
-            name='[`embed_type`]()',
+            name='[`embed_type`](https://github.com/Huyu2239/ExpandBot/blob/add_docs/docs/set.md#embed_type--embed_color)',
             value=f'```\nembed_type={data.get("embed_type")}\n```\n'
         )
         set_em.add_field(
-            name='[`embed_color`]()',
+            name='[`embed_color`](https://github.com/Huyu2239/ExpandBot/blob/add_docs/docs/set.md#embed_type--embed_color)',
             value=f'```\nembed_type=#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
-            name='[`allow`]()',
+            name='[`allow`](https://github.com/Huyu2239/ExpandBot/blob/add_docs/docs/set.md#allow)',
             value=f'```\nallow={data.get("allow")}\n```\n'
         )
 
