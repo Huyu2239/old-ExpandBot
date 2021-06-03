@@ -169,29 +169,24 @@ class Help(commands.Cog):
 
     async def add_set_fields(self, set_em, data):
         set_em.add_field(
-            name='`hidden`',
-            value='メッセージのリンクがサーバー外で送信された際に、\nメッセージを保護して展開しないように設定できます。\n'
-                  f'```\nhidden={data.get("hidden")}\n```\n'
+            name='[`hidden`]()',
+            value=f'```\nhidden={data.get("hidden")}\n```\n'
         )
         set_em.add_field(
-            name='`anonymity`',
-            value='メッセージのリンクがサーバー外で送信された際に、\nユーザー名を保護して表示しないように設定できます。\n'
-                  f'```\nanonymity={data.get("anonymous")}\n```\n'
+            name='[`anonymity`]()',
+            value=f'```\nanonymity={data.get("anonymous")}\n```\n'
         )
         set_em.add_field(
-            name='`embed_type`',
-            value='メッセージのリンクが送信された際に、\nどのような形式で展開するのかを選択できます。\n'
-                  f'```\nembed_type={data.get("embed_type")}\n```\n'
+            name='[`embed_type`]()',
+            value=f'```\nembed_type={data.get("embed_type")}\n```\n'
         )
         set_em.add_field(
-            name='`embed_color`',
-            value='メッセージのリンクが送信された際の埋め込みの色を指定できます。\n'
-                  f'```\nembed_type=#{data.get("embed_color")}\n```\n'
+            name='[`embed_color`]()',
+            value=f'```\nembed_type=#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
-            name='`allow`',
-            value='メッセージのリンクがサーバー外で送信された際かつhiddenがtrueの場合、\n特別に展開を許可するサーバー、ユーザー、チャンネルを指定できます。\nhiddenがfalseの場合は関係なく展開されます。\n'
-                  f'```\nallow={data.get("allow")}\n```\n'
+            name='[`allow`]()',
+            value=f'```\nallow={data.get("allow")}\n```\n'
         )
 
     @cog_ext.cog_slash(
