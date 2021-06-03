@@ -47,14 +47,14 @@ class Help(commands.Cog):
         self.bot.slash.remove_cog_commands(self)
 
     async def update_help_em(self):
-        self.help_em[0].remove_field(1)
         self.help_em[0].remove_field(2)
-        self.help_em[0].set_field_at(
+        self.help_em[0].remove_field(1)
+        self.help_em[0].insert_field_at(
             index=1,
             name='動作サーバー数',
             value=f'{len(self.bot.guilds)}guilds'
         )
-        self.help_em[0].set_field_at(
+        self.help_em[0].insert_field_at(
             index=2,
             name='総ユーザー数',
             value=f'{len(set(self.bot.get_all_members()))}users'
