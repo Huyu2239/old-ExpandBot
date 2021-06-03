@@ -8,7 +8,7 @@ user以外はサーバー管理権限を保有しているユーザーのみ実�
 ### /mute category `<category>`
 カテゴリーをミュートします。  
 `category`が指定されていない場合は実行されたチャンネルが属するカテゴリーが対象です。
-### /mute channel '<channel>`
+### /mute channel `<channel>`
 チャンネルをミュートします。  
 `channel`が指定されてない場合は実行されたチャンネルが対象です。
 ### /mute role `<role>`
