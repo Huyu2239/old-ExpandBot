@@ -2,10 +2,10 @@ class Check:
     async def com_per(ctx, target):
         if target == 1:
             if ctx.guild is None:
-                await ctx.send('ユーザー設定以外はDMで実行できません。')
+                await ctx.send('サーバー設定はDMで実行できません。')
                 return False
             if not ctx.author.guild_permissions.manage_guild:
-                await ctx.send()
+                await ctx.send('サーバー設定は管理権限を持っているユーザーのみ実行できます。')
                 return False
         return True
 
@@ -29,12 +29,15 @@ class Check:
             return False
 
     async def hidden(bot, m):
-        # users
+        # member, user, guild
+        guild_data = bot.guilds_data.get(str(m.guild.id))
+        if guild_data:
+            member_data = guild_data.get(str(m.author.id))
+        if member_data:
+            return member_data.get('hidden')
         user_data = bot.users_data.get(str(m.author.id))
         if user_data:
             return user_data.get('hidden')
-        # guilds
-        guild_data = bot.guilds_data.get(str(m.guild.id))
         if guild_data:
             return guild_data.get('hidden')
         return True
@@ -43,8 +46,7 @@ class Check:
         target_dict = target_data.get(str(target_id))
         if target_dict:
             return target_dict.get('anonymity')
-        else:
-            return None
+        return None
 
     async def allow(bot, message, msg):
         num = 1
@@ -53,6 +55,11 @@ class Check:
         msg_guild_data = bot.guilds_data.get(str(msg.guild.id))
         if msg_guild_data:
             valid_elements = set(message_data_list) & set(msg_guild_data.get('allow'))
+            num *= (-1)**len(valid_elements)
+        # member
+        msg_member_data = msg_guild_data.get(str(msg.author.id))
+        if msg_member_data:
+            valid_elements = set(message_data_list) & set(msg_member_data.get('allow'))
             num *= (-1)**len(valid_elements)
         # user
         msg_user_data = bot.users_data.get(str(msg.author.id))
