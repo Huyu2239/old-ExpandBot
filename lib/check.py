@@ -29,12 +29,13 @@ class Check:
             return False
 
     async def hidden(bot, m):
-        # users
         user_data = bot.users_data.get(str(m.author.id))
+        guild_data = bot.guilds_data.get(str(m.guild.id))
+        member_data = guild_data.get(str(m.author.id))
+        if member_data:
+            return member_data.get('hidden')
         if user_data:
             return user_data.get('hidden')
-        # guilds
-        guild_data = bot.guilds_data.get(str(m.guild.id))
         if guild_data:
             return guild_data.get('hidden')
         return True
@@ -43,8 +44,7 @@ class Check:
         target_dict = target_data.get(str(target_id))
         if target_dict:
             return target_dict.get('anonymity')
-        else:
-            return None
+        return None
 
     async def allow(bot, message, msg):
         num = 1
