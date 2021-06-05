@@ -5,7 +5,7 @@ class Check:
                 await ctx.send('サーバーに関する設定はDMで実行できません。')
                 return False
             if not ctx.author.guild_permissions.manage_guild:
-                await ctx.send('サーバー設に関する定は管理権限を持っているユーザーのみ実行できます。')
+                await ctx.send('サーバーに関する設定は管理権限を持っているユーザーのみ実行できます。')
                 return False
         return True
 
