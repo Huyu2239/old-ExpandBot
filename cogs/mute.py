@@ -89,7 +89,7 @@ class Mute(commands.Cog):
                     create_choice(name="category", value=2),
                     create_choice(name="channel", value=3),
                     create_choice(name="role", value=4),
-                    create_choice(name="user", value=5)
+                    create_choice(name="user", value=0)
                 ]
             ),
             create_option(
@@ -121,7 +121,7 @@ class Mute(commands.Cog):
             msg = await self.set_channel_mute(channel, ctx)
         if target == 4:
             msg = await self.set_role_mute(role, ctx)
-        if target == 5:
+        if target == 0:
             msg = await self.set_user_mute(ctx)
         if msg is None:
             return

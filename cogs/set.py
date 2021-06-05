@@ -52,7 +52,7 @@ class Set(commands.Cog):
                 option_type=4, required=True,
                 choices=[
                     create_choice(name='server', value=1),
-                    create_choice(name='user', value=2)
+                    create_choice(name='user', value=0)
                 ]
             )
         ]
@@ -66,7 +66,7 @@ class Set(commands.Cog):
                 await self.bot.database.write_new_data(self.bot.guilds_data, ctx.guild.id)
                 target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             target_name = f'Server: {ctx.guild.name}'
-        if target == 2:
+        if target == 0:
             if ctx.guild is None:
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
                 if target_dict is None:
