@@ -77,7 +77,8 @@ class Help(commands.Cog):
     async def compose_mute_em(self, ctx):
         mute_em = discord.Embed(
             title="mute",
-            description="展開の無効化・有効化をします。\n[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/mute.md)",
+            description="展開の無効化・有効化をします。\n"
+                        "[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/mute.md)",
             color=discord.Colour.blue()
         )
         # user_mute
