@@ -42,6 +42,7 @@ class Help(commands.Cog):
             name='動作環境',
             value='[Tera-server](https://tera-server.com/)'
         )
+        self.docs_url = 'https://github.com/Huyu2239/ExpandBot/blob/main/docs'
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
@@ -78,7 +79,7 @@ class Help(commands.Cog):
         mute_em = discord.Embed(
             title="mute",
             description="展開の無効化・有効化をします。\n"
-                        "[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/mute.md)",
+                        f"[公式ドキュメント]({self.docs_url}/mute.md)",
             color=discord.Colour.blue()
         )
         # user_mute
@@ -132,7 +133,7 @@ class Help(commands.Cog):
     async def send_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description="[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md)\n"
+            description=f"[公式ドキュメント]({self.docs_url}/set.md)\n"
                         "\n```\n展開に関する設定を行います。\n```\n\n",
             color=discord.Colour.blue()
         )
@@ -169,31 +170,20 @@ class Help(commands.Cog):
             await ctx.send(embed=await self.add_set_fields(set_emb, guild_data))
 
     async def add_set_fields(self, set_em, data):
-        set_em.add_field(
-            name='\u200b',
-            value='[`hidden`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#hidden)'
-                  f'```\n{data.get("hidden")}\n```\n'
-        )
-        set_em.add_field(
-            name='\u200b',
-            value='[`anonymity`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#anonymity)'
-                  f'```\n{data.get("anonymity")}\n```\n'
-        )
-        set_em.add_field(
-            name='\u200b',
-            value='[`embed_type`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
-                  f'```\n{data.get("embed_type")}\n```\n'
-        )
-        set_em.add_field(
-            name='\u200b',
-            value='[`embed_color`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
-                  f'```\n#{data.get("embed_color")}\n```\n'
-        )
-        set_em.add_field(
-            name='\u200b',
-            value='[`allow`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#allow)'
-                  f'```\n{data.get("allow")}\n```\n'
-        )
+        vals = ['hidden', 'anonymity', 'embed_type', 'embed_color', 'allow']
+        url_vals = ['hidden', 'anonymity', 'embed_type--embed_color', 'embed_type--embed_color', 'allow']
+        num = 0
+        for val in vals:
+            if data.get(val) is True:
+                val_bool = '<:True:850591234283798558>'
+            elif data.get(val) is False:
+                val_bool = '<:False:850591522171912202>'
+            else:
+                val_bool = '<:None:850591553688436746>'
+            set_em.add_field(
+                name='\u200b',
+                value=f'[`{val}`]({self.docs_url}/set.md#{url_vals[num]}): {val_bool}'
+            )  
         return set_em
 
     @cog_ext.cog_slash(
