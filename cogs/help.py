@@ -193,6 +193,7 @@ class Help(commands.Cog):
             value='メッセージのリンクがサーバー外で送信された際かつhiddenがtrueの場合、\n特別に展開を許可するサーバー、ユーザー、チャンネルを指定できます。\nhiddenがfalseの場合は関係なく展開されます。\n'
                   f'```\nallow={data.get("allow")}\n```\n'
         )
+        return set_em
 
     @cog_ext.cog_slash(
         name='help',
