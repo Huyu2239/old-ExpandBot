@@ -172,27 +172,27 @@ class Help(commands.Cog):
         set_em.add_field(
             name='\u200b',
             value='[`hidden`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#hidden)'
-                  f'```\nhidden={data.get("hidden")}\n```\n'
+                  f'```\n{data.get("hidden")}\n```\n'
         )
         set_em.add_field(
             name='\u200b',
             value='[`anonymity`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#anonymity)'
-                  f'```\nanonymity={data.get("anonymity")}\n```\n'
+                  f'```\n{data.get("anonymity")}\n```\n'
         )
         set_em.add_field(
             name='\u200b',
             value='[`embed_type`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
-                  f'```\nembed_type={data.get("embed_type")}\n```\n'
+                  f'```\n{data.get("embed_type")}\n```\n'
         )
         set_em.add_field(
             name='\u200b',
             value='[`embed_color`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
-                  f'```\nembed_type=#{data.get("embed_color")}\n```\n'
+                  f'```\n#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
             name='\u200b',
             value='[`allow`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#allow)'
-                  f'```\nallow={data.get("allow")}\n```\n'
+                  f'```\n{data.get("allow")}\n```\n'
         )
         return set_em
 
