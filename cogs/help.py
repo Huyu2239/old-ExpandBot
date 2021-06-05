@@ -170,9 +170,7 @@ class Help(commands.Cog):
             await ctx.send(embed=await self.add_set_fields(set_emb, guild_data))
 
     async def add_set_fields(self, set_em, data):
-        vals = ['hidden', 'anonymity', 'embed_type', 'embed_color', 'allow']
-        url_vals = ['hidden', 'anonymity', 'embed_type--embed_color', 'embed_type--embed_color', 'allow']
-        num = 0
+        vals = ['hidden', 'anonymity']
         for val in vals:
             if data.get(val) is True:
                 val_bool = '<:True:850591234283798558>'
@@ -182,8 +180,23 @@ class Help(commands.Cog):
                 val_bool = '<:None:850591553688436746>'
             set_em.add_field(
                 name='\u200b',
-                value=f'[`{val}`]({self.docs_url}/set.md#{url_vals[num]}): {val_bool}'
-            )  
+                value=f'[`{val}`]({self.docs_url}/set.md#{val}): {val_bool}'
+            )
+        set_em.add_field(
+            name='\u200b',
+            value=f'[`embed_type`]({self.docs_url}/set.md#embed_type--embed_color)'
+                  f'```\n{data.get("embed_type")}\n```\n'
+        )
+        set_em.add_field(
+            name='\u200b',
+            value=f'[`embed_color`]({self.docs_url}/set.md#embed_type--embed_color)'
+                  f'```\n#{data.get("embed_color")}\n```\n'
+        )
+        set_em.add_field(
+            name='\u200b',
+            value=f'[`allow`]({self.docs_url}/set.md#allow)'
+                  f'```\n{data.get("allow")}\n```\n'
+        )
         return set_em
 
     @cog_ext.cog_slash(
