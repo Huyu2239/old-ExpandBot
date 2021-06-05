@@ -184,6 +184,10 @@ class Help(commands.Cog):
             )
         set_em.add_field(
             name='\u200b',
+            value='\u200b'
+        )
+        set_em.add_field(
+            name='\u200b',
             value=f'[`embed_type`]({self.docs_url}/set.md#embed_type--embed_color)'
                   f'```\n{data.get("embed_type")}\n```\n'
         )
