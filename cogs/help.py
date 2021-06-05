@@ -47,14 +47,12 @@ class Help(commands.Cog):
         self.bot.slash.remove_cog_commands(self)
 
     async def update_help_em(self):
-        self.help_em[0].remove_field(2)
-        self.help_em[0].remove_field(1)
-        self.help_em[0].insert_field_at(
+        self.help_em[0].set_field_at(
             index=1,
             name='動作サーバー数',
             value=f'{len(self.bot.guilds)}guilds'
         )
-        self.help_em[0].insert_field_at(
+        self.help_em[0].set_field_at(
             index=2,
             name='総ユーザー数',
             value=f'{len(set(self.bot.get_all_members()))}users'
@@ -79,7 +77,8 @@ class Help(commands.Cog):
     async def compose_mute_em(self, ctx):
         mute_em = discord.Embed(
             title="mute",
-            description="展開の無効化・有効化をします。",
+            description="展開の無効化・有効化をします。\n"
+                        "[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/mute.md)",
             color=discord.Colour.blue()
         )
         # user_mute
@@ -130,10 +129,11 @@ class Help(commands.Cog):
         )
         return mute_em
 
-    async def compose_set_em(self, ctx):
+    async def send_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description="\n```\n展開に関する設定を行います。\n```\n",
+            description="[公式ドキュメント](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md)\n"
+                        "\n```\n展開に関する設定を行います。\n```\n\n",
             color=discord.Colour.blue()
         )
         if ctx.guild is None:
@@ -155,42 +155,43 @@ class Help(commands.Cog):
             data = guild_data.get(str(ctx.author.id))
         if data is None:
             data = {}
-        await self.add_set_fields(set_em, data)
+        await ctx.send(embed=await self.add_set_fields(set_em, data))
         if ctx.guild:
-            if ctx.author.guild_permissions.manage_guild:
-                set_em.add_field(
-                    name='現在のサーバー設定',
-                    value='\n```\n変更はサーバー管理者のみ可能です。\n```\n',
-                    inline=False
-                )
-                guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
-                await self.add_set_fields(set_em, guild_data)
-        return set_em
+            set_emb = discord.Embed()
+            set_emb.add_field(
+                name=' \n \n現在のサーバー設定',
+                value='\n```\n変更はサーバー管理者のみ可能です。\n```\n',
+                inline=False
+            )
+            guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
+            if guild_data is None:
+                guild_data = {}
+            await ctx.send(embed=await self.add_set_fields(set_emb, guild_data))
 
     async def add_set_fields(self, set_em, data):
         set_em.add_field(
-            name='`hidden`',
-            value='メッセージのリンクがサーバー外で送信された際に、\nメッセージを保護して展開しないように設定できます。\n'
+            name='\u200b',
+            value='[`hidden`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#hidden)'
                   f'```\nhidden={data.get("hidden")}\n```\n'
         )
         set_em.add_field(
-            name='`anonymity`',
-            value='メッセージのリンクがサーバー外で送信された際に、\nユーザー名を保護して表示しないように設定できます。\n'
-                  f'```\nanonymity={data.get("anonymous")}\n```\n'
+            name='\u200b',
+            value='[`anonymity`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#anonymity)'
+                  f'```\nanonymity={data.get("anonymity")}\n```\n'
         )
         set_em.add_field(
-            name='`embed_type`',
-            value='メッセージのリンクが送信された際に、\nどのような形式で展開するのかを選択できます。\n'
+            name='\u200b',
+            value='[`embed_type`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
                   f'```\nembed_type={data.get("embed_type")}\n```\n'
         )
         set_em.add_field(
-            name='`embed_color`',
-            value='メッセージのリンクが送信された際の埋め込みの色を指定できます。\n'
+            name='\u200b',
+            value='[`embed_color`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#embed_type--embed_color)'
                   f'```\nembed_type=#{data.get("embed_color")}\n```\n'
         )
         set_em.add_field(
-            name='`allow`',
-            value='メッセージのリンクがサーバー外で送信された際かつhiddenがtrueの場合、\n特別に展開を許可するサーバー、ユーザー、チャンネルを指定できます。\nhiddenがfalseの場合は関係なく展開されます。\n'
+            name='\u200b',
+            value='[`allow`](https://github.com/Huyu2239/ExpandBot/blob/main/docs/set.md#allow)'
                   f'```\nallow={data.get("allow")}\n```\n'
         )
 
@@ -216,8 +217,7 @@ class Help(commands.Cog):
         elif command == 1:
             await ctx.send(embed=self.help_em[1])
         elif command == 2:
-            set_em = await self.compose_set_em(ctx)
-            await ctx.send(embed=set_em)
+            await self.send_set_em(ctx)
         elif command == 3:
             mute_em = await self.compose_mute_em(ctx)
             await ctx.send(embed=mute_em)
