@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 
-class Del(commands.Cog):
+class DeleteMessageByReaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -39,4 +39,4 @@ class Del(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Del(bot))
+    bot.add_cog(DeleteMessageByReaction(bot))
