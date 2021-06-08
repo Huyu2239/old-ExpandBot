@@ -1,0 +1,2 @@
+class MuteSpec:
+    pass

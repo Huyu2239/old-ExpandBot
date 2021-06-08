@@ -1,0 +1,2 @@
+class GuildSpec:
+    pass

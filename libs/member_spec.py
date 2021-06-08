@@ -1,0 +1,2 @@
+class MemberSpec:
+    pass
