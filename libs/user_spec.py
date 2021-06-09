@@ -1,2 +1,0 @@
-class UserSpec:
-    pass
