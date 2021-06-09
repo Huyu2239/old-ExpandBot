@@ -3,6 +3,8 @@ user_configs = {}
 
 def set_config_elements(self, config):
     """カプセル化"""
+    if config is None:
+        return
     self.hidden = config.get('hidden')
     self.anonymous = config.get('anonymous')
     self.embed_type = config.get('embed_type')
