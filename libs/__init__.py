@@ -1,5 +1,2 @@
-from .guild_spec import *
-from .member_spec import *
-from .user_spec import *
-
-import configs
+from .configs import *
+from .expand_mesages import *
