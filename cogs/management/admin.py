@@ -4,6 +4,7 @@ from importlib import reload
 import lib.check
 import lib.database
 import lib.embed
+import git
 
 class Admin(commands.Cog):
     def __init__(self, bot):
