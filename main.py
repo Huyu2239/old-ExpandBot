@@ -51,6 +51,8 @@ class Mybot(commands.Bot):
         self.users_data = {}
 
     async def on_ready(self):
+        self.load_extension("cogs.management.admin")
+        self.load_extension("cogs.management.eval")
         for cog in os.listdir("./cogs"):
             if cog.endswith(".py"):
                 try:

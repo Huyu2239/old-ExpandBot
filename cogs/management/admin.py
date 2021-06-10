@@ -29,8 +29,6 @@ class Admin(commands.Cog):
 
         for cog in os.listdir('./cogs'):
             if cog.endswith('.py'):
-                if cog == 'reload.py':
-                    continue
                 try:
                     self.bot.unload_extension(f'cogs.{cog[:-3]}')
                 except commands.ExtensionNotLoaded:
