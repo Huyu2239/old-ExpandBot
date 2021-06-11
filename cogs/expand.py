@@ -23,13 +23,13 @@ class Expand(commands.Cog):
 
     async def find_msgs(self, message):
         msgs = list()
-        error = list()
+        errors = list()
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
         for url_mutch in re.finditer(regex_discord_message_url, message_text):
             ids = url_mutch.groupdict()
             url = url_mutch[0]
             if self.bot.get_guild(int(ids["guild"])) is None:
-                error.append({"url": url, "content": "GuildNotFound"})
+                errors.append({"url": url, "content": "GuildNotFound"})
                 continue
             msg = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids["guild"])),
@@ -37,19 +37,19 @@ class Expand(commands.Cog):
                 msg_id=int(ids["message"]),
             )
             if isinstance(msg, str):
-                error.append({"url": url, "content": msg})
+                errors.append({"url": url, "content": msg})
                 continue
             if message.guild.id != int(ids["guild"]):
                 msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
-                    error.append({"url": url, "content": "NotAllowed"})
+                    errors.append({"url": url, "content": "NotAllowed"})
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    error.append({"url": url, "content": "HiddenMessage"})
+                    errors.append({"url": url, "content": "HiddenMessage"})
                     continue
             msgs.append(msg)
-        return msgs, error
+        return msgs, errors
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
@@ -67,7 +67,7 @@ class Expand(commands.Cog):
             return
         if await self.bot.Check.mute(self.bot.mute_data, message):
             return
-        msgs, error = await self.find_msgs(message)
+        msgs, errors = await self.find_msgs(message)
         for msg in msgs:
             sent_ms = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
@@ -91,7 +91,7 @@ class Expand(commands.Cog):
                 url=url,
             )
             await main_message.edit(embed=main_embed)
-        if not error:
+        if not errors:
             return
 
         def reaction_check(reaction, user):
@@ -105,7 +105,7 @@ class Expand(commands.Cog):
         except asyncio.TimeoutError:
             return await message.remove_reaction("\U0000274c", member=message.guild.me)
         embed = discord.Embed(title="ERROR", colour=discord.Color.red())
-        for e in error:
+        for e in errors:
             embed.add_field(name=e.get("content"), value=e.get("url"))
         await message.channel.send(embed=embed)
 
