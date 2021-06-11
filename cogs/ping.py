@@ -12,9 +12,9 @@ class Ping(commands.Cog):
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
-    @cog_ext.cog_slash(name='ping', description='このBotのレイテンシを返します。')
+    @cog_ext.cog_slash(name="ping", description="このBotのレイテンシを返します。")
     async def slash_say(self, ctx: SlashContext):
-        msg = await ctx.send('pong!')
+        msg = await ctx.send("pong!")
         await msg.edit(content=f"pong!\n`{self.bot.ws.latency * 1000:.0f}ms`")
 
 
