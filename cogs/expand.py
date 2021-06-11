@@ -8,7 +8,7 @@ regex_discord_message_url = (
     "https://(ptb.|canary.)?discord(app)?.com/channels/"
     "(?P<guild>[0-9]{18})/(?P<channel>[0-9]{18})/(?P<message>[0-9]{18})"
 )
-
+EMOJI_ERROR_UNQUOTABLE = "\U0000274c"
 
 class Expand(commands.Cog):
     """
@@ -99,11 +99,11 @@ class Expand(commands.Cog):
                 return False
             return True
 
-        await message.add_reaction("\U0000274c")
+        await message.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         try:
             await self.bot.wait_for("reaction_add", timeout=15, check=reaction_check)
         except asyncio.TimeoutError:
-            return await message.remove_reaction("\U0000274c", member=message.guild.me)
+            return await message.remove_reaction(EMOJI_ERROR_UNQUOTABLE, member=message.guild.me)
         embed = discord.Embed(title="ERROR", colour=discord.Color.red())
         for e in errors:
             embed.add_field(name=e.get("content"), value=e.get("url"))
