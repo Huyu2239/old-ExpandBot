@@ -22,8 +22,8 @@ class Expand(commands.Cog):
         self.bot = bot
 
     async def find_msgs(self, message):
-        msgs = list()
-        errors = list()
+        msgs: list[discord.Message]
+        errors: list[dict[str, str]]
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
         for url_mutch in re.finditer(regex_discord_message_url, message_text):
             ids = url_mutch.groupdict()
