@@ -18,13 +18,14 @@ class Mute(commands.Cog):
 
 
     @cog_ext.cog_slash(
-        name='mute',
-        description='展開の無効化・有効化をします。',
+        name="mute",
+        description="展開の無効化・有効化をします。",
         options=[
             create_option(
                 name="target",
                 description="muteする対象を選択",
-                option_type=4, required=True,
+                option_type=4,
+                required=True,
                 choices=[
                     create_choice(name="server", value=MutingTargets.GUILD),
                     create_choice(name="category", value=MutingTargets.CATEGORY),
@@ -36,19 +37,19 @@ class Mute(commands.Cog):
             create_option(
                 name="category",
                 description="muteするカテゴリーを選択",
-                option_type=7, required=False
+                option_type=7,
+                required=False,
             ),
             create_option(
                 name="channel",
                 description="muteするチャンネル選択",
-                option_type=7, required=False
+                option_type=7,
+                required=False,
             ),
             create_option(
-                name="role",
-                description="muteするロールを選択",
-                option_type=8, required=False
-            )
-        ]
+                name="role", description="muteするロールを選択", option_type=8, required=False
+            ),
+        ],
     )
     async def slash_say(self, ctx: SlashContext, target: int, category=None, channel=None, role=None):
         target = MutingTargets(target)
