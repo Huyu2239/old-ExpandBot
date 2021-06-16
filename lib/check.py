@@ -1,11 +1,18 @@
+import enum
+
+
+class MutingTargets(enum.IntEnum):
+    GUILD = enum.auto()
+    CATEGORY = enum.auto()
+    CHANNEL = enum.auto()
+    ROLE = enum.auto()
+    USER = enum.auto()
+
+
 class Check:
     async def com_per(ctx, target):
-        if target != 0:
-            if ctx.guild is None:
-                await ctx.send('サーバーに関する設定はDMで実行できません。')
-                return False
-            if not ctx.author.guild_permissions.manage_guild:
-                await ctx.send('サーバーに関する設定は管理権限を持っているユーザーのみ実行できます。')
+        if target is not MutingTargets.USER:
+            if ctx.guild is None or not ctx.author.guild_permissions.manage_guild:
                 return False
         return True
 
