@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
+from lib.check import SettingTargets
 
 
 class Set(commands.Cog):
@@ -46,24 +47,29 @@ class Set(commands.Cog):
                 option_type=4,
                 required=True,
                 choices=[
-                    create_choice(name="server", value=1),
-                    create_choice(name="user", value=0),
+                    create_choice(name="サーバー", value=SettingTargets.GUILD),
+                    create_choice(name="ユーザー", value=SettingTargets.USER),
                 ],
             )
         ],
     )
     async def slash_say(self, ctx: SlashContext, target):
+        target = MutingTargets(target)
         if await self.bot.Check.com_per(ctx, target) is False:
-            return
-        if target == 1:
+            if ctx.guild is None:
+                return await ctx.send("サーバーに関する設定はDMで実行できません。")
+            if not ctx.author.guild_permissions.manage_guild:
+                return await ctx.send("サーバーに関する設定は管理権限を持っているユーザーのみ実行できます。")
+
+        if target is SettingTargets.GUILD:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             if target_dict is None:
                 await self.bot.database.write_new_data(
                     self.bot.guilds_data, ctx.guild.id
                 )
                 target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
-            target_name = f"Server: {ctx.guild.name}"
-        if target == 0:
+            target_name = f"サーバー: {ctx.guild.name}"
+        if target is SettingTargets.USER:
             if ctx.guild is None:
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
                 if target_dict is None:
@@ -71,7 +77,7 @@ class Set(commands.Cog):
                         self.bot.users_data, ctx.author.id
                     )
                     target_dict = self.bot.users_data.get(str(ctx.author.id))
-                target_name = f"User: @{str(ctx.author)}"
+                target_name = f"ユーザー: @{str(ctx.author)}"
             else:
                 guild_dict = self.bot.guilds_data.get(str(ctx.guild.id))
                 if guild_dict is None:
@@ -80,7 +86,7 @@ class Set(commands.Cog):
                 if target_dict is None:
                     await self.bot.database.write_new_data(guild_dict, ctx.author.id)
                     target_dict = guild_dict.get(str(ctx.author.id))
-                target_name = f"Member: @{str(ctx.author)}"
+                target_name = f"メンバー: @{str(ctx.author)}"
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
 
         # check_funcs
@@ -178,7 +184,7 @@ class Set(commands.Cog):
                 await s.delete()
 
             elif int(num.content) == 5:
-                s = await ctx.send("引用を許可する場所、アカウントのIDを送信してください。")
+                s = await ctx.send("引用を許可する場所、ユーザーのIDを送信してください。")
                 allow_num = await self.bot.wait_for("message", check=check_id)
                 if int(allow_num.content) not in target_dict.get("allow"):
                     target_dict["allow"].append(int(allow_num.content))
