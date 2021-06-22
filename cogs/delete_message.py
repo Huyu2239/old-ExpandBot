@@ -1,5 +1,7 @@
 from discord.ext import commands
 
+EMOJI_DELETE_UNQUOTABLE = "\U0001f5d1"
+
 
 class DeleteMessage(commands.Cog):
     def __init__(self, bot):
@@ -15,7 +17,7 @@ class DeleteMessage(commands.Cog):
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):
-        if payload.member.bot or str(payload.emoji) == "\U0001f5d1":
+        if payload.member.bot or str(payload.emoji) == EMOJI_DELETE_UNQUOTABLE:
             return
         msg = await (self.bot.get_channel(payload.channel_id)).fetch_message(
             payload.message_id
