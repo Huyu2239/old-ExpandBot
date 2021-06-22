@@ -37,7 +37,7 @@ class Info(commands.Cog):
         self.help_em[0].add_field(
             name="動作環境", value="[Tera-server](https://tera-server.com/)"
         )
-        self.docs_url = "https://github.com/Huyu2239/ExpandBot/blob/main/docs"
+        self.wiki_url = "https://github.com/Huyu2239/ExpandBot/wiki"
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
@@ -69,7 +69,7 @@ class Info(commands.Cog):
     async def compose_mute_em(self, ctx):
         mute_em = discord.Embed(
             title="mute",
-            description="展開の無効化・有効化をします。\n" f"[公式ドキュメント]({self.docs_url}/mute.md)",
+            description="展開の無効化・有効化をします。\n" f"[公式ドキュメント]({self.wiki_url}/Muteコマンド概要)",
             color=discord.Colour.blue(),
         )
         # user_mute
@@ -122,7 +122,7 @@ class Info(commands.Cog):
     async def send_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description=f"[公式ドキュメント]({self.docs_url}/set.md)\n"
+            description=f"[公式ドキュメント]({self.wiki_url}/Setコマンド概要)\n"
             "\n```\n展開に関する設定を行います。\n```\n\n",
             color=discord.Colour.blue(),
         )
@@ -165,22 +165,22 @@ class Info(commands.Cog):
                 val_bool = "<:None:850591553688436746>"
             set_em.add_field(
                 name="\u200b",
-                value=f"[`{val}`]({self.docs_url}/set.md#{val}): {val_bool}",
+                value=f"[`{val}`]({self.wiki_url}): {val_bool}",
             )
         set_em.add_field(name="\u200b", value="\u200b")
         set_em.add_field(
             name="\u200b",
-            value=f"[`embed_type`]({self.docs_url}/set.md#embed_type--embed_color)"
+            value=f"[`embed_type`]({self.wiki_url})"
             f'```\n{data.get("embed_type")}\n```\n',
         )
         set_em.add_field(
             name="\u200b",
-            value=f"[`embed_color`]({self.docs_url}/set.md#embed_type--embed_color)"
+            value=f"[`embed_color`]({self.wiki_url})"
             f'```\n#{data.get("embed_color")}\n```\n',
         )
         set_em.add_field(
             name="\u200b",
-            value=f"[`allow`]({self.docs_url}/set.md#allow)"
+            value=f"[`allow`]({self.wiki_url})"
             f'```\n{data.get("allow")}\n```\n',
         )
         return set_em
@@ -191,7 +191,7 @@ class Info(commands.Cog):
         options=[
             create_option(
                 name="command",
-                description="helpを表示するコマンドを選択してください。",
+                description="helpを閲覧するコマンドを選択してください。",
                 option_type=4,
                 required=False,
                 choices=[
