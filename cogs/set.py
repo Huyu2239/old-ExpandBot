@@ -54,7 +54,7 @@ class Set(commands.Cog):
         ],
     )
     async def slash_say(self, ctx: SlashContext, target):
-        target = MutingTargets(target)
+        target = SettingTargets(target)
         if await self.bot.Check.com_per(ctx, target) is False:
             if ctx.guild is None:
                 return await ctx.send("サーバーに関する設定はDMで実行できません。")

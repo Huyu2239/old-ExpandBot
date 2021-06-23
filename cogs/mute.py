@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
 from lib.check import MutingTargets
+import json
 
 
 class Mute(commands.Cog):
@@ -25,19 +26,19 @@ class Mute(commands.Cog):
         with open(f'{self.bot.data_directory}mute_configs.json', 'w', encoding='utf-8') as f:
             json.dump(self.mute_configs, f, ensure_ascii=False, indent=4)
 
-    async def muted_in(self, ctx):
+    async def muted_in(self, m:discord.Message):
         num = 1
-        if ctx.guild.id in mute_data.get("guilds"):
+        if m.guild.id in self.mute_configs.get("guilds"):
             num *= -1
-        if ctx.channel.category:
-            if ctx.channel.category_id in mute_data.get("categories"):
+        if m.channel.category:
+            if m.channel.category_id in self.mute_configs.get("categories"):
                 num *= -1
-        if ctx.channel.id in mute_data.get("channels"):
+        if m.channel.id in self.mute_configs.get("channels"):
             num *= -1
-        for role in ctx.author.roles:
-            if role.id in mute_data.get("roles"):
+        for role in m.author.roles:
+            if role.id in self.mute_configs.get("roles"):
                 num *= -1
-        if ctx.author.id in mute_data.get("users"):
+        if m.author.id in self.mute_configs.get("users"):
             num *= -1
         return num == -1
 

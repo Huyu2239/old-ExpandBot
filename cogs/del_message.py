@@ -43,4 +43,4 @@ class DeleteMessageByReaction(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(DeleteMessage(bot))
+    bot.add_cog(DeleteMessageByReaction(bot))

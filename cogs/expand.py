@@ -30,8 +30,8 @@ class Expand(commands.Cog):
         self.bot = bot
 
     async def find_msgs(self, message):
-        results = list[FetchMessageResult]
-        message_text = re.sub(r"\|\|[^|]+?\|\|", None, message.content)
+        results: list[FetchMessageResult]
+        message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
         for url_mutch in re.finditer(regex_discord_message_url, message_text):
             ids = url_mutch.groupdict()
             url = url_mutch[0]
@@ -72,7 +72,7 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        if await self.bot.get_cog("Mute").muted_in(ctx):
+        if await self.bot.get_cog("Mute").muted_in(message):
             return
         results = await self.find_msgs(message)
         for result in results:
