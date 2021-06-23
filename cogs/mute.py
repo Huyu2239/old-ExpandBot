@@ -10,11 +10,36 @@ from lib.check import MutingTargets
 class Mute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mute_configs = bot.mute_data
+        with open(f'{self.bot.data_directory}mute_configs.json') as f:
+            self.mute_configs = json.load(f)
         asyncio.create_task(self.bot.slash.sync_all_commands())
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
+
+    async def read(self):
+        with open(f'{self.bot.data_directory}mute_configs.json') as f:
+            self.mute_configs = json.load(f)
+
+    async def write(self):
+        with open(f'{self.bot.data_directory}mute_configs.json', 'w', encoding='utf-8') as f:
+            json.dump(self.mute_configs, f, ensure_ascii=False, indent=4)
+
+    async def muted_in(self, ctx):
+        num = 1
+        if ctx.guild.id in mute_data.get("guilds"):
+            num *= -1
+        if ctx.channel.category:
+            if ctx.channel.category_id in mute_data.get("categories"):
+                num *= -1
+        if ctx.channel.id in mute_data.get("channels"):
+            num *= -1
+        for role in ctx.author.roles:
+            if role.id in mute_data.get("roles"):
+                num *= -1
+        if ctx.author.id in mute_data.get("users"):
+            num *= -1
+        return num == -1
 
     @cog_ext.cog_slash(
         name="mute",
@@ -107,7 +132,7 @@ class Mute(commands.Cog):
             title="設定完了", description=msg, color=discord.Colour.blue()
         )
         await ctx.send(embed=embed)
-        await self.bot.database.Mute_Data.write(self.bot)
+        await self.write()
 
 
 def setup(bot):

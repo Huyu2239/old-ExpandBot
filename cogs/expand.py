@@ -65,7 +65,7 @@ class Expand(commands.Cog):
     async def on_message(self, message):
         if message.author.bot or message.guild is None:
             return
-        if await self.bot.Check.mute(self.bot.mute_data, message):
+        if await self.bot.get_cog("Mute").muted_in(ctx):
             return
         msgs, errors = await self.find_msgs(message)
         for msg in msgs:

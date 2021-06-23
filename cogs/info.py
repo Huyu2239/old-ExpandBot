@@ -9,6 +9,7 @@ from discord_slash.utils.manage_commands import create_choice, create_option
 class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.mute_configs = self.bot.get_cog("Mute").mute_configs
         asyncio.create_task(self.bot.slash.sync_all_commands())
         self.help_em = [
             (
@@ -73,7 +74,7 @@ class Info(commands.Cog):
             color=discord.Colour.blue(),
         )
         # user_mute
-        if ctx.author.id in self.bot.mute_data.get("users"):
+        if ctx.author.id in self.mute_configs.get("users"):
             user_mute = True
         else:
             user_mute = False
@@ -83,27 +84,27 @@ class Info(commands.Cog):
             )
             return mute_em
         # guild_mute
-        if ctx.guild.id in self.bot.mute_data.get("guilds"):
+        if ctx.guild.id in self.mute_configs.get("guilds"):
             server_mute = True
         else:
             server_mute = False
         # category_mute
         if ctx.channel.category:
-            if ctx.channel.category_id in self.bot.mute_data.get("categories"):
+            if ctx.channel.category_id in self.mute_configs.get("categories"):
                 category_mute = True
             else:
                 category_mute = False
         else:
             category_mute = "NotFound"
         # channel_mute
-        if ctx.channel.id in self.bot.mute_data.get("channels"):
+        if ctx.channel.id in self.mute_configs.get("channels"):
             channel_mute = True
         else:
             channel_mute = False
         # role_mute
         role_num = 1
         for role in ctx.author.roles:
-            if role.id in self.bot.mute_data.get("roles"):
+            if role.id in self.mute_configs.get("roles"):
                 role_num *= -1
         if role_num == -1:
             role_mute = True
