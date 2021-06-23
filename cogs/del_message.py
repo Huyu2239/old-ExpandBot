@@ -3,7 +3,7 @@ from discord.ext import commands
 EMOJI_DELETE_UNQUOTABLE = "\U0001f5d1"
 
 
-class DeleteMessage(commands.Cog):
+class DeleteMessageByReaction(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
