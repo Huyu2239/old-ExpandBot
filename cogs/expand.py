@@ -10,6 +10,14 @@ regex_discord_message_url = (
 )
 EMOJI_ERROR_UNQUOTABLE = "\U0000274c"
 
+
+class FetchMessageResult:
+    def __init__(self, is_success, msg, error):
+        self.is_success = is_success
+        self.msg = msg
+        self.error = error
+
+
 class Expand(commands.Cog):
     """
     message: on_messageの引数によるMessageObject
@@ -22,44 +30,43 @@ class Expand(commands.Cog):
         self.bot = bot
 
     async def find_msgs(self, message):
-        msgs: list[discord.Message]
-        errors: list[dict[str, str]]
-        message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
+        results = list[FetchMessageResult]
+        message_text = re.sub(r"\|\|[^|]+?\|\|", None, message.content)
         for url_mutch in re.finditer(regex_discord_message_url, message_text):
             ids = url_mutch.groupdict()
             url = url_mutch[0]
             if self.bot.get_guild(int(ids["guild"])) is None:
-                errors.append({"url": url, "content": "GuildNotFound"})
+                results.append(FetchMessageResult(False, None, "Guild-NotFound"))
                 continue
-            msg = await self.fetch_msg_with_id(
+            msg, error = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids["guild"])),
                 msg_channel_id=int(ids["channel"]),
                 msg_id=int(ids["message"]),
             )
-            if isinstance(msg, str):
-                errors.append({"url": url, "content": msg})
+            if error:
+                results.append(FetchMessageResult(False, None, error))
                 continue
             if message.guild.id != int(ids["guild"]):
                 msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
-                    errors.append({"url": url, "content": "NotAllowed"})
+                    results.append(FetchMessageResult(False, None, "NotAllowed"))
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    errors.append({"url": url, "content": "HiddenMessage"})
+                    results.append(FetchMessageResult(False, None, "HiddenMessage"))
                     continue
-            msgs.append(msg)
-        return msgs, errors
+            results.append(FetchMessageResult(True, msg, None))
+        return results
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
         channel = msg_guild.get_channel(msg_channel_id)
         if channel is None:
-            return "ChannelNotFound"
+            return None, "Channel-NotFound"
         try:
             msg = await channel.fetch_message(msg_id)
         except Exception:
-            return "MessageNotFound"
-        return msg
+            return None, "Message-NotFound"
+        return msg, None
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -67,8 +74,11 @@ class Expand(commands.Cog):
             return
         if await self.bot.get_cog("Mute").muted_in(ctx):
             return
-        msgs, errors = await self.find_msgs(message)
-        for msg in msgs:
+        results = await self.find_msgs(message)
+        for result in results:
+            if not result.is_success:
+                raise result.error
+            msg = result.msg
             sent_ms = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
             sent_ms.append(await message.channel.send(embed=embed_em[0]))
@@ -95,7 +105,11 @@ class Expand(commands.Cog):
             return
 
         def reaction_check(reaction, user):
-            if user.bot or reaction.message.id != message.id:
+            if (
+                user.bot
+                or reaction.message.id != message.id
+                and str(reaction.emoji) != EMOJI_ERROR_UNQUOTABLE
+            ):
                 return False
             return True
 
@@ -103,7 +117,9 @@ class Expand(commands.Cog):
         try:
             await self.bot.wait_for("reaction_add", timeout=15, check=reaction_check)
         except asyncio.TimeoutError:
-            return await message.remove_reaction(EMOJI_ERROR_UNQUOTABLE, member=message.guild.me)
+            return await message.remove_reaction(
+                EMOJI_ERROR_UNQUOTABLE, member=message.guild.me
+            )
         embed = discord.Embed(title="ERROR", colour=discord.Color.red())
         for e in errors:
             embed.add_field(name=e.get("content"), value=e.get("url"))
