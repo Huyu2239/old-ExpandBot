@@ -54,7 +54,9 @@ class Expand(commands.Cog):
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    results.append(FetchMessageResult(False, None, url, "HiddenMessage"))
+                    results.append(
+                        FetchMessageResult(False, None, url, "HiddenMessage")
+                    )
                     continue
             results.append(FetchMessageResult(True, msg, url, None))
         return results

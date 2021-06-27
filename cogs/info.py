@@ -182,8 +182,7 @@ class Info(commands.Cog):
         )
         set_em.add_field(
             name="\u200b",
-            value=f"[`allow`]({self.wiki_url})"
-            f'```\n{data.get("allow")}\n```\n',
+            value=f"[`allow`]({self.wiki_url})" f'```\n{data.get("allow")}\n```\n',
         )
         return set_em
 
