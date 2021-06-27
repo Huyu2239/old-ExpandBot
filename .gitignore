@@ -2,5 +2,3 @@ env
 .env
 __pycache__
 *.json
-!sample_set_data.json
-!sample_mute_data.json
