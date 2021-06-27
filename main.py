@@ -39,8 +39,8 @@ class Mybot(commands.Bot):
         self.slash_client = SlashCommand(self, sync_commands=True)
 
         self.log_ch_id = 830233567215747132
-        self.guilds_data = {}
-        self.users_data = {}
+        self.guild_configs = {}
+        self.user_configs = {}
 
     async def on_ready(self):
         self.load_extension("cogs.management.admin")

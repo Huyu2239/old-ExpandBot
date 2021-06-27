@@ -1,7 +1,7 @@
 import json
 
 
-async def write_new_data(target_dict: dict, target_id):
+async def write_new_config(target_dict: dict, target_id):
     tmp_dict = {
         'hidden': True,
         'anonymity': True,
@@ -13,44 +13,44 @@ async def write_new_data(target_dict: dict, target_id):
     return target_dict.get(str(target_id))
 
 
-async def read_all_data(bot):
-    mute_data = await Mute_Data.read(bot)
-    guilds_data = await Guilds_Data.read(bot)
-    users_data = await Users_Data.read(bot)
-    return mute_data, guilds_data, users_data
+async def read_all_configs(bot):
+    mute_configs = await MuteConfigs.read(bot)
+    guild_configs = await GuildConfigs.read(bot)
+    user_configs = await UserConfigs.read(bot)
+    return mute_configs, guild_configs, user_configs
 
 
-async def write_all_data(bot):
-    await Mute_Data.write(bot)
-    await Guilds_Data.write(bot)
-    await Users_Data.write(bot)
+async def write_all_configs(bot):
+    await MuteConfigs.write(bot)
+    await GuildConfigs.write(bot)
+    await UserConfigs.write(bot)
 
 
-class Mute_Data:
+class MuteConfigs:
     async def read(bot):
-        with open(f'{bot.data_directory}mute_data.json') as f:
-            bot.mute_data = json.load(f)
+        with open(f'{bot.data_directory}mute_configs.json') as f:
+            bot.get_cog("Mute").mute_configs = json.load(f)
 
     async def write(bot):
-        with open(f'{bot.data_directory}mute_data.json', 'w', encoding='utf-8') as f:
-            json.dump(bot.mute_data, f, ensure_ascii=False, indent=4)
+        with open(f'{bot.data_directory}mute_configs.json', 'w', encoding='utf-8') as f:
+            json.dump(bot.get_cog("Mute").mute_configs, f, ensure_ascii=False, indent=4)
 
 
-class Guilds_Data:
+class GuildConfigs:
     async def read(bot):
-        with open(f'{bot.data_directory}guilds_data.json') as f:
-            bot.guilds_data = json.load(f)
+        with open(f'{bot.data_directory}guild_configs.json') as f:
+            bot.guild_configs = json.load(f)
 
     async def write(bot):
-        with open(f'{bot.data_directory}guilds_data.json', 'w', encoding='utf-8') as f:
-            json.dump(bot.guilds_data, f, ensure_ascii=False, indent=4)
+        with open(f'{bot.data_directory}guild_configs.json', 'w', encoding='utf-8') as f:
+            json.dump(bot.guild_configs, f, ensure_ascii=False, indent=4)
 
 
-class Users_Data:
+class UserConfigs:
     async def read(bot):
-        with open(f'{bot.data_directory}users_data.json') as f:
-            bot.users_data = json.load(f)
+        with open(f'{bot.data_directory}user_configs.json') as f:
+            bot.user_configs = json.load(f)
 
     async def write(bot):
-        with open(f'{bot.data_directory}users_data.json', 'w', encoding='utf-8') as f:
-            json.dump(bot.users_data, f, ensure_ascii=False, indent=4)
+        with open(f'{bot.data_directory}user_configs.json', 'w', encoding='utf-8') as f:
+            json.dump(bot.user_configs, f, ensure_ascii=False, indent=4)

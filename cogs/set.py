@@ -64,7 +64,7 @@ class Set(commands.Cog):
         if target is SettingTargets.GUILD:
             target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
             if target_dict is None:
-                await self.bot.database.write_new_data(
+                await self.bot.database.write_new_config(
                     self.bot.guilds_data, ctx.guild.id
                 )
                 target_dict = self.bot.guilds_data.get(str(ctx.guild.id))
@@ -73,7 +73,7 @@ class Set(commands.Cog):
             if ctx.guild is None:
                 target_dict = self.bot.users_data.get(str(ctx.author.id))
                 if target_dict is None:
-                    await self.bot.database.write_new_data(
+                    await self.bot.database.write_new_config(
                         self.bot.users_data, ctx.author.id
                     )
                     target_dict = self.bot.users_data.get(str(ctx.author.id))
@@ -84,7 +84,7 @@ class Set(commands.Cog):
                     return await ctx.send("サーバーの設定が存在しないため実行できません。")
                 target_dict = guild_dict.get(str(ctx.author.id))
                 if target_dict is None:
-                    await self.bot.database.write_new_data(guild_dict, ctx.author.id)
+                    await self.bot.database.write_new_config(guild_dict, ctx.author.id)
                     target_dict = guild_dict.get(str(ctx.author.id))
                 target_name = f"メンバー: @{str(ctx.author)}"
         m = await ctx.send(embed=await self.compose_set_em(target_dict, target_name))
@@ -202,7 +202,7 @@ class Set(commands.Cog):
                 await num.add_reaction("\U00002705")
             await m.edit(embed=await self.compose_set_em(target_dict, target_name))
         # 終了時
-        await self.bot.database.write_all_data(self.bot)
+        await self.bot.database.write_all_configs(self.bot)
 
 
 def setup(bot):
