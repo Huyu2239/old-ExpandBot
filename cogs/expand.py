@@ -12,9 +12,10 @@ EMOJI_ERROR_UNQUOTABLE = "\U0000274c"
 
 
 class FetchMessageResult:
-    def __init__(self, is_success, msg, error):
+    def __init__(self, is_success, msg, url, error):
         self.is_success = is_success
         self.msg = msg
+        self.url = url
         self.error = error
 
 
@@ -30,13 +31,13 @@ class Expand(commands.Cog):
         self.bot = bot
 
     async def find_msgs(self, message):
-        results: list[FetchMessageResult]
+        results: list[FetchMessageResult] = []
         message_text = re.sub(r"\|\|[^|]+?\|\|", "", message.content)
         for url_mutch in re.finditer(regex_discord_message_url, message_text):
             ids = url_mutch.groupdict()
             url = url_mutch[0]
             if self.bot.get_guild(int(ids["guild"])) is None:
-                results.append(FetchMessageResult(False, None, "Guild-NotFound"))
+                results.append(FetchMessageResult(False, None, url, "Guild-NotFound"))
                 continue
             msg, error = await self.fetch_msg_with_id(
                 msg_guild=self.bot.get_guild(int(ids["guild"])),
@@ -44,18 +45,18 @@ class Expand(commands.Cog):
                 msg_id=int(ids["message"]),
             )
             if error:
-                results.append(FetchMessageResult(False, None, error))
+                results.append(FetchMessageResult(False, None, url, error))
                 continue
             if message.guild.id != int(ids["guild"]):
                 msg_allow = await self.bot.Check.allow(self.bot, message, msg)
                 if msg_allow is False:
-                    results.append(FetchMessageResult(False, None, "NotAllowed"))
+                    results.append(FetchMessageResult(False, None, url, "NotAllowed"))
                     continue
                 msg_hidden = await self.bot.Check.hidden(self.bot, msg)
                 if msg_hidden is True:
-                    results.append(FetchMessageResult(False, None, "HiddenMessage"))
+                    results.append(FetchMessageResult(False, None, url, "HiddenMessage"))
                     continue
-            results.append(FetchMessageResult(True, msg, None))
+            results.append(FetchMessageResult(True, msg, url, None))
         return results
 
     async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
@@ -75,9 +76,11 @@ class Expand(commands.Cog):
         if await self.bot.get_cog("Mute").muted_in(message):
             return
         results = await self.find_msgs(message)
+        errors = []
         for result in results:
             if not result.is_success:
-                raise result.error
+                errors.append(result)
+                continue
             msg = result.msg
             sent_ms = []
             embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
@@ -122,7 +125,7 @@ class Expand(commands.Cog):
             )
         embed = discord.Embed(title="ERROR", colour=discord.Color.red())
         for e in errors:
-            embed.add_field(name=e.get("content"), value=e.get("url"))
+            embed.add_field(name=e.error, value=e.url)
         await message.channel.send(embed=embed)
 
 
