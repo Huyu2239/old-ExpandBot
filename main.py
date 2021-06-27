@@ -39,20 +39,11 @@ class Mybot(commands.Bot):
         self.slash_client = SlashCommand(self, sync_commands=True)
 
         self.log_ch_id = 830233567215747132
-
-        self.mute_data = {
-            "guilds": [],
-            "categories": [],
-            "channels": [],
-            "roles": [],
-            "users": []
-        }
         self.guilds_data = {}
         self.users_data = {}
 
     async def on_ready(self):
         self.load_extension("cogs.management.admin")
-        self.load_extension("cogs.management.eval")
         for cog in os.listdir("./cogs"):
             if cog.endswith(".py"):
                 try:
