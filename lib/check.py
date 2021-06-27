@@ -13,6 +13,10 @@ class SettingTargets(enum.IntEnum):
     GUILD = enum.auto()
     USER = enum.auto()
 
+class HelpTargetCommands(enum.IntEnum):
+    PING = enum.auto()
+    MUTE = enum.auto()
+    SET = enum.auto()
 
 class Check:
     async def com_per(ctx, target):

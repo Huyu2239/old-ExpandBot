@@ -4,12 +4,12 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
+from lib.check import HelpTargetCommands
 
 
 class Info(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.mute_configs = self.bot.get_cog("Mute").mute_configs
         asyncio.create_task(self.bot.slash.sync_all_commands())
         self.help_em = [
             (
@@ -68,6 +68,7 @@ class Info(commands.Cog):
         await self.update_help_em()
 
     async def compose_mute_em(self, ctx):
+        self.mute_configs = self.bot.get_cog("Mute").mute_configs
         mute_em = discord.Embed(
             title="mute",
             description="展開の無効化・有効化をします。\n" f"[公式ドキュメント]({self.wiki_url}/Muteコマンド概要)",
@@ -196,23 +197,28 @@ class Info(commands.Cog):
                 option_type=4,
                 required=False,
                 choices=[
-                    create_choice(name="ping", value=1),
-                    create_choice(name="set", value=2),
-                    create_choice(name="mute", value=3),
+                    create_choice(name="ping", value=HelpTargetCommands.PING),
+                    create_choice(name="mute", value=HelpTargetCommands.MUTE),
+                    create_choice(name="set", value=HelpTargetCommands.SET),
                 ],
             )
         ],
     )
     async def slash_say(self, ctx: SlashContext, command=None):
+        # none
         if command is None:
-            await ctx.send(embed=self.help_em[0])
-        elif command == 1:
-            await ctx.send(embed=self.help_em[1])
-        elif command == 2:
-            await self.send_set_em(ctx)
-        elif command == 3:
+            return await ctx.send(embed=self.help_em[0])
+        command = HelpTargetCommands(command)
+        # ping
+        if command is HelpTargetCommands.PING:
+            return await ctx.send(embed=self.help_em[1])
+        # mute
+        elif command is HelpTargetCommands.MUTE:
             mute_em = await self.compose_mute_em(ctx)
-            await ctx.send(embed=mute_em)
+            return await ctx.send(embed=mute_em)
+        # set
+        elif command is HelpTargetCommands.SET:
+            return await self.send_set_em(ctx)
 
 
 def setup(bot):
