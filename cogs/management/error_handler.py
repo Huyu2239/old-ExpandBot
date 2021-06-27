@@ -4,6 +4,8 @@ import traceback
 import discord
 from discord.ext import commands
 
+EMOJI_ERROR_UNQUOTABLE = "\U0000274c"
+
 
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
@@ -25,7 +27,7 @@ class CommandErrorHandler(commands.Cog):
         error_str = "".join(
             traceback.TracebackException.from_exception(orig_error).format()
         )
-        await ctx.add_reaction("\U0000274c")
+        await ctx.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         await self.error_log(error_str)
 
     @commands.Cog.listener()
@@ -76,7 +78,7 @@ class CommandErrorHandler(commands.Cog):
                 name="UnknownError",
                 value=f"予期しないエラーが発生しました。\n必ず報告してください。\n```py\n{error_str}```",
             )
-
+        await ctx.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         try:
             await ctx.send("エラーが発生しました\nスクショなどの情報と一緒にサポートサーバーまで連絡してください", embed=embed)
         except discord.errors.HTTPException:
@@ -97,6 +99,7 @@ class CommandErrorHandler(commands.Cog):
 
         embed = discord.Embed(title="ERROR", colour=discord.Colour.red())
         embed.add_field(name="内部エラー\nサポートサーバーまでご連絡ください", value=f"```py\n{error_str}```")
+        await ctx.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         try:
             await ctx.send(embed=embed)
         except discord.errors.HTTPException:
