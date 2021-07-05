@@ -2,9 +2,7 @@ import os
 from importlib import reload
 
 import git
-import lib.check
-import lib.database
-import lib.embed
+import libs
 from discord.ext import commands
 
 
@@ -14,9 +12,7 @@ class Admin(commands.Cog):
         self.bot.load_extension("cogs.management.eval")
         self.bot.load_extension("cogs.management.error_handler")
         self.repo = git.Repo()
-        bot.Check = lib.check.Check
-        bot.database = lib.database
-        bot.embed = lib.embed
+        bot.libs = libs
 
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
@@ -29,25 +25,23 @@ class Admin(commands.Cog):
         await msg.edit(content="完了")
 
     @commands.command()
-    async def reload(self, ctx, path=None):
+    async def reload(self, ctx, arg=None):
         msg = await ctx.send("更新中")
-        if path == "lib":
-            reload(lib.check)
-            self.bot.Check = lib.check.Check
-            reload(lib.database)
-            self.bot.database = lib.database
-            reload(lib.embed)
-            self.bot.embed = lib.embed
+        if arg == "libs":
+            reload(libs)
+            self.bot.libs = libs
+        self.bot.reload_extension("cogs.management.error_handler")
         for cog in os.listdir("./cogs"):
             if cog.endswith(".py"):
                 try:
-                    self.bot.unload_extension(f"cogs.{cog[:-3]}")
-                except commands.ExtensionNotLoaded:
-                    pass
-                try:
-                    self.bot.load_extension(f"cogs.{cog[:-3]}")
-                except commands.ExtensionAlreadyLoaded:
                     self.bot.reload_extension(f"cogs.{cog[:-3]}")
+                except commands.ExtensionNotLoaded:
+                    self.bot.load_extension(f"cogs.{cog[:-3]}")
+        await self.bot.change_presence(
+            activity=discord.Game(
+                name=f"/help | {len(self.guilds)}guilds"
+            )
+        )
         await msg.edit(content="更新しました")
         print("--------------------------------------------------")
 
