@@ -38,9 +38,7 @@ class Admin(commands.Cog):
                 except commands.ExtensionNotLoaded:
                     self.bot.load_extension(f"cogs.{cog[:-3]}")
         await self.bot.change_presence(
-            activity=discord.Game(
-                name=f"/help | {len(self.guilds)}guilds"
-            )
+            activity=discord.Game(name=f"/help | {len(self.guilds)}guilds")
         )
         await msg.edit(content="更新しました")
         print("--------------------------------------------------")
