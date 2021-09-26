@@ -4,15 +4,13 @@ from importlib import reload
 import git
 import libs
 from discord.ext import commands
+import discord
 
 
 class Admin(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.load_extension("cogs.management.eval")
-        self.bot.load_extension("cogs.management.error_handler")
         self.repo = git.Repo()
-        bot.libs = libs
 
     async def cog_check(self, ctx):
         return await self.bot.is_owner(ctx.author)
@@ -28,17 +26,22 @@ class Admin(commands.Cog):
     async def reload(self, ctx, arg=None):
         msg = await ctx.send("更新中")
         if arg == "libs":
+            for lib in os.listdir("./libs"):
+                if lib.endswith(".py") and lib != "__init__.py":
+                    reload(getattr(libs, lib[:-3]))
             reload(libs)
-            self.bot.libs = libs
-        self.bot.reload_extension("cogs.management.error_handler")
-        for cog in os.listdir("./cogs"):
-            if cog.endswith(".py"):
+        for folder in self.bot.cog_folders:
+            if folder == "management":
+                continue
+            for cog in os.listdir(f"./{folder}"):
+                if cog == "__pycache__":
+                    continue
                 try:
-                    self.bot.reload_extension(f"cogs.{cog[:-3]}")
-                except commands.ExtensionNotLoaded:
-                    self.bot.load_extension(f"cogs.{cog[:-3]}")
+                    self.bot.reload_extension(f"{folder}.{cog[:-3]}")
+                except discord.ext.commands.errors.ExtensionNotLoaded:
+                    self.bot.load_extension(f"{folder}.{cog[:-3]}")
         await self.bot.change_presence(
-            activity=discord.Game(name=f"/help | {len(self.guilds)}guilds")
+            activity=discord.Game(name=f"/ヘルプ | {len(self.bot.guilds)}guilds")
         )
         await msg.edit(content="更新しました")
         print("--------------------------------------------------")

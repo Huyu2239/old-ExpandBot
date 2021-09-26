@@ -78,7 +78,7 @@ class CommandErrorHandler(commands.Cog):
                 name="UnknownError",
                 value=f"予期しないエラーが発生しました。\n必ず報告してください。\n```py\n{error_str}```",
             )
-        await ctx.add_reaction(EMOJI_ERROR_UNQUOTABLE)
+        await ctx.message.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         try:
             await ctx.send("エラーが発生しました\nスクショなどの情報と一緒にサポートサーバーまで連絡してください", embed=embed)
         except discord.errors.HTTPException:

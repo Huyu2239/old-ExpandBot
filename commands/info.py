@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
-from lib.check import HelpTargetCommands
+from libs import HelpTargetCommands
 
 
 class Info(commands.Cog):
@@ -15,7 +15,7 @@ class Info(commands.Cog):
             (
                 discord.Embed(
                     title="概要",
-                    description="Discordのメッセージリンクを展開するBotです。\n`/help <commands>`でコマンドの詳細を表示します。",
+                    description="Discordのメッセージリンクを展開するBotです。\n`/ヘルプ <コマンド>`でコマンドの詳細を表示します。",
                     color=discord.Colour.blue(),
                 )
             ),
@@ -31,12 +31,9 @@ class Info(commands.Cog):
             name="URL一覧",
             value="[サポートサーバー](https://discord.gg/CF49JQUnXV)\n[導入リンク](https://discord.com/api/oauth2/authorize?client_id=827863670507438130&permissions=85056&scope=bot%20applications.commands)",
         )
-        self.help_em[0].add_field(name="動作サーバー数", value=f"{len(self.bot.guilds)}guilds")
+        self.help_em[0].add_field(name="動作サーバー数", value=f"{len(self.bot.guilds)}サーバー")
         self.help_em[0].add_field(
-            name="総ユーザー数", value=f"{len(set(self.bot.get_all_members()))}users"
-        )
-        self.help_em[0].add_field(
-            name="動作環境", value="[Tera-server](https://tera-server.com/)"
+            name="総ユーザー数", value=f"{len(set(self.bot.get_all_members()))}ユーザー"
         )
         self.wiki_url = "https://github.com/Huyu2239/ExpandBot/wiki"
 
@@ -45,10 +42,10 @@ class Info(commands.Cog):
 
     async def update_help_em(self):
         self.help_em[0].set_field_at(
-            index=1, name="動作サーバー数", value=f"{len(self.bot.guilds)}guilds"
+            index=1, name="動作サーバー数", value=f"{len(self.bot.guilds)}サーバー"
         )
         self.help_em[0].set_field_at(
-            index=2, name="総ユーザー数", value=f"{len(set(self.bot.get_all_members()))}users"
+            index=2, name="総ユーザー数", value=f"{len(set(self.bot.get_all_members()))}ユーザー"
         )
 
     @commands.Cog.listener()
@@ -64,67 +61,47 @@ class Info(commands.Cog):
         await self.update_help_em()
 
     @commands.Cog.listener()
-    async def on_member_leave(self, guild):
+    async def on_member_leave(self, member):
         await self.update_help_em()
 
     async def compose_mute_em(self, ctx):
         self.mute_configs = self.bot.get_cog("Mute").mute_configs
         mute_em = discord.Embed(
-            title="mute",
-            description="展開の無効化・有効化をします。\n" f"[公式ドキュメント]({self.wiki_url}/Muteコマンド概要)",
+            title="ミュート",
+            description="展開のミュートをします。\n" f"[公式ドキュメント]({self.wiki_url}/ミュート)",
             color=discord.Colour.blue(),
         )
-        # user_mute
-        if ctx.author.id in self.mute_configs.get("users"):
-            user_mute = True
-        else:
-            user_mute = False
+        user_mute = ctx.author.id in self.bot.mute_configs.get("users")
         if ctx.guild is None:
-            mute_em.add_field(
-                name="`現在の設定`", value=f"```\nuser_mute={user_mute}\n```\n"
-            )
+            mute_em.add_field(name="`現在の設定`", value=f"```\nユーザー={user_mute}\n```\n")
             return mute_em
-        # guild_mute
-        if ctx.guild.id in self.mute_configs.get("guilds"):
-            server_mute = True
-        else:
-            server_mute = False
-        # category_mute
-        if ctx.channel.category:
-            if ctx.channel.category_id in self.mute_configs.get("categories"):
-                category_mute = True
-            else:
-                category_mute = False
-        else:
+        server_mute = ctx.guild.id in self.bot.mute_configs.get("guilds")
+        category_mute = ctx.channel.category_id in self.bot.mute_configs.get(
+            "categories"
+        )
+        if ctx.channel.category is None:
             category_mute = "NotFound"
-        # channel_mute
-        if ctx.channel.id in self.mute_configs.get("channels"):
-            channel_mute = True
-        else:
-            channel_mute = False
+        channel_mute = ctx.channel.id in self.bot.mute_configs.get("channels")
         # role_mute
         role_num = 1
         for role in ctx.author.roles:
             if role.id in self.mute_configs.get("roles"):
                 role_num *= -1
-        if role_num == -1:
-            role_mute = True
-        else:
-            role_mute = False
+        role_mute = role_num == -1
         mute_em.add_field(
             name="`現在の設定`",
-            value=f"```\nserver_mute={server_mute}\n```\n"
-            f"```\ncategory_mute={category_mute}\n```\n"
-            f"```\nchannel_mute={channel_mute}\n```\n"
-            f"```\nrole_mute={role_mute}\n```\n"
-            f"```\nuser_mute={user_mute}\n```\n",
+            value=f"```\nサーバー={server_mute}\n```\n"
+            f"```\nカテゴリー={category_mute}\n```\n"
+            f"```\nチャンネル={channel_mute}\n```\n"
+            f"```\nロール={role_mute}\n```\n"
+            f"```\nユーザー={user_mute}\n```\n",
         )
         return mute_em
 
     async def send_set_em(self, ctx):
         set_em = discord.Embed(
             title="set",
-            description=f"[公式ドキュメント]({self.wiki_url}/Setコマンド概要)\n"
+            description=f"[公式ドキュメント]({self.wiki_url}/設定)\n"
             "\n```\n展開に関する設定を行います。\n```\n\n",
             color=discord.Colour.blue(),
         )
@@ -187,8 +164,8 @@ class Info(commands.Cog):
         return set_em
 
     @cog_ext.cog_slash(
-        name="help",
-        description="このBotのHelpを返します。",
+        name="ヘルプ",
+        description="このBotのヘルプを返します。",
         options=[
             create_option(
                 name="command",
