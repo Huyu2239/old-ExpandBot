@@ -2,7 +2,6 @@ import enum
 
 
 class HelpTargetCommands(enum.IntEnum):
-    PING = enum.auto()
     MUTE = enum.auto()
     SET = enum.auto()
 
