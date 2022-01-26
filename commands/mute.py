@@ -18,7 +18,7 @@ class Mute(commands.Cog):
 
 
     @cog_ext.cog_slash(
-        name="mute",
+        name="ミュート",
         description="展開の無効化・有効化をします。",
         options=[
             create_option(
