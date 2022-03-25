@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
-from lib.check import SettingTargets
+from libs import SettingTargets
 
 
 class Set(commands.Cog):
@@ -104,10 +104,10 @@ class Set(commands.Cog):
         def check_type(m):
             if m.author == ctx.author and m.channel == ctx.channel:
                 try:
-                    type = int(m.content)
+                    embed_type = int(m.content)
                 except SyntaxError:
                     return False
-                if type > 1:
+                if embed_type > 1:
                     return False
                 return True
             return False

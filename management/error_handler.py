@@ -3,6 +3,7 @@ import traceback
 
 import discord
 from discord.ext import commands
+from logging import getLogger
 
 EMOJI_ERROR_UNQUOTABLE = "\U0000274c"
 
@@ -13,13 +14,14 @@ class CommandErrorHandler(commands.Cog):
         self.timeout = discord.Embed(
             title="ERROR", description="タイムアウトしました。", color=discord.Color.red()
         )
+        self.logger = getLogger(__name__)
 
     async def error_log(self, str):
         try:
             await self.bot.get_channel(self.bot.log_ch_id).send(str)
         except discord.errors.HTTPException:
             await self.bot.get_channel(self.bot.log_ch_id).send("エラー文が文字数を超過しました")
-            print(str)  # stderr
+            self.logger.warning(str)
 
     @commands.Cog.listener()
     async def on_error(self, ctx, error):
@@ -78,7 +80,7 @@ class CommandErrorHandler(commands.Cog):
                 name="UnknownError",
                 value=f"予期しないエラーが発生しました。\n必ず報告してください。\n```py\n{error_str}```",
             )
-        await ctx.add_reaction(EMOJI_ERROR_UNQUOTABLE)
+        await ctx.message.add_reaction(EMOJI_ERROR_UNQUOTABLE)
         try:
             await ctx.send("エラーが発生しました\nスクショなどの情報と一緒にサポートサーバーまで連絡してください", embed=embed)
         except discord.errors.HTTPException:

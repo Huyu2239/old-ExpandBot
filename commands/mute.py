@@ -5,45 +5,20 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
-from lib.check import MutingTargets
+from libs import MutingTargets
 
 
 class Mute(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open(f'{self.bot.data_directory}mute_configs.json') as f:
-            self.mute_configs = json.load(f)
         asyncio.create_task(self.bot.slash.sync_all_commands())
 
     def cog_unload(self):
         self.bot.slash.remove_cog_commands(self)
 
-    async def read(self):
-        with open(f'{self.bot.data_directory}mute_configs.json') as f:
-            self.mute_configs = json.load(f)
-
-    async def write(self):
-        with open(f'{self.bot.data_directory}mute_configs.json', 'w', encoding='utf-8') as f:
-            json.dump(self.mute_configs, f, ensure_ascii=False, indent=4)
-
-    async def muted_in(self, m:discord.Message):
-        num = 1
-        if m.guild.id in self.mute_configs.get("guilds"):
-            num *= -1
-        if m.channel.category:
-            if m.channel.category_id in self.mute_configs.get("categories"):
-                num *= -1
-        if m.channel.id in self.mute_configs.get("channels"):
-            num *= -1
-        for role in m.author.roles:
-            if role.id in self.mute_configs.get("roles"):
-                num *= -1
-        if m.author.id in self.mute_configs.get("users"):
-            num *= -1
-        return num == -1
 
     @cog_ext.cog_slash(
-        name="mute",
+        name="ミュート",
         description="展開の無効化・有効化をします。",
         options=[
             create_option(
