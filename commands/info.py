@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
-from libs import HelpTargetCommands, MutingTarget, MuteConfigs
+from libs import HelpTargetCommands, MutingTargets, MuteConfigs, utils
 
 
 class Info(commands.Cog):
@@ -94,33 +94,33 @@ class Info(commands.Cog):
             "\n```\n展開に関する設定を行います。\n```\n\n",
             color=discord.Colour.blue(),
         )
+        # ユーザー設定のみ
         if ctx.guild is None:
             user_config = self.bot.users_data.get(str(ctx.author.id))
             set_embed.add_field(
                 name="現在のユーザー設定", value="\n```\n変更はDMでのみ可能です。\n```\n", inline=False
             )
+            return await ctx.send(embed=await self.add_set_fields(set_embed, user_config))
+        # メンバー設定&サーバー設定
         else:
-            guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
+            guild_config = self.bot.guilds_data.get(str(ctx.guild.id))
+            if guild_config is None:
+                guild_config = {}
+            member_config = guild_config.get(str(ctx.author.id))
+            if member_config is None:
+                member_config = {}
             set_embed.add_field(
                 name="現在のメンバー設定", value="\n```\n変更はサーバーでのみ可能です。\n```\n", inline=False
             )
-            if guild_data is None:
-                guild_data = {}
-            data = guild_data.get(str(ctx.author.id))
-        if data is None:
-            data = {}
-        await ctx.send(embed=await self.add_set_fields(set_em, data))
-        if ctx.guild:
-            set_emb = discord.Embed()
-            set_emb.add_field(
+            await ctx.send(embed=await self.add_set_fields(set_embed, member_config))
+
+            set_embed = discord.Embed()
+            set_embed.add_field(
                 name=" \n \n現在のサーバー設定",
                 value="\n```\n変更はサーバー管理者のみ可能です。\n```\n",
                 inline=False,
             )
-            guild_data = self.bot.guilds_data.get(str(ctx.guild.id))
-            if guild_data is None:
-                guild_data = {}
-            await ctx.send(embed=await self.add_set_fields(set_emb, guild_data))
+            await ctx.send(embed=await self.add_set_fields(set_embed, guild_config))
 
     async def add_set_fields(self, set_em, data):
         vals = ["hidden", "anonymity"]
@@ -176,7 +176,7 @@ class Info(commands.Cog):
         # mute
         if command is HelpTargetCommands.MUTE:
             mute_embed = await self.compose_mute_embed(ctx)
-            return await ctx.send(embed=mute_em)
+            return await ctx.send(embed=mute_embed)
         # set
         elif command is HelpTargetCommands.SET:
             set_embed = await self.compose_set_embed(ctx)

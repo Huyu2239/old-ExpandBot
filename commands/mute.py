@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from discord_slash import SlashContext, cog_ext
 from discord_slash.utils.manage_commands import create_choice, create_option
-from lib.check import MutingTargets
+from libs import MutingTargets
 
 
 class Mute(commands.Cog):

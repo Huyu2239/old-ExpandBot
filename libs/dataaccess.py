@@ -1,6 +1,6 @@
 import os
 import asyncpg
-from .enums import MutingTarget
+from .enums import MutingTargets
 
 DEFOLT_CONFIG = {"hidden": 1, "exception": "", "layout": 1, "color": 000000}
 
@@ -8,7 +8,6 @@ DEFOLT_CONFIG = {"hidden": 1, "exception": "", "layout": 1, "color": 000000}
 class UserConfigs:
     @staticmethod
     async def read(user_id):
-        return DEFOLT_CONFIG
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(
             f"SELECT * FROM USER_CONFIGS WHERE user_id = {user_id};"
@@ -18,7 +17,6 @@ class UserConfigs:
 
     @staticmethod
     async def write(user_id, hidden, exception, layout, color):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(
             f"SELECT * FROM USER_CONFIGS WHERE user_id = {user_id};"
@@ -35,7 +33,6 @@ class UserConfigs:
 
     @staticmethod
     async def remove(user_id):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         await conn.execute(f"DELETE FROM USER_CONFIGS WHERE user_id = {user_id}")
         return await conn.close()
@@ -44,7 +41,6 @@ class UserConfigs:
 class MemberConfigs:
     @staticmethod
     async def read(member_id, guild_id):
-        return DEFOLT_CONFIG
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(
             f"SELECT * FROM MEMBER_CONFIGS WHERE member_id = {member_id} and guild_id = {guild_id};"
@@ -54,7 +50,6 @@ class MemberConfigs:
 
     @staticmethod
     async def write(member_id, guild_id, hidden, exception, layout, color):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(
             f"SELECT * FROM MEMBER_CONFIGS WHERE member_id = {member_id} and guild_id = {guild_id};"
@@ -71,7 +66,6 @@ class MemberConfigs:
 
     @staticmethod
     async def remove(member_id):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         await conn.execute(f"DELETE FROM MEMBER_CONFIGS WHERE member_id = {member_id}")
         return await conn.close()
@@ -80,7 +74,6 @@ class MemberConfigs:
 class GuildConfigs:
     @staticmethod
     async def read(guild_id):
-        return DEFOLT_CONFIG
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(f"SELECT * FROM GUILD_CONFIGS WHERE guild_id = {guild_id};")
         await conn.close()
@@ -88,7 +81,6 @@ class GuildConfigs:
 
     @staticmethod
     async def write(guild_id, hidden, exception, layout, color):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetchrow(
             f"SELECT * FROM GUILD_CONFIGS WHERE guild_id = {guild_id};"
@@ -105,7 +97,6 @@ class GuildConfigs:
 
     @staticmethod
     async def remove(guild_id):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         await conn.execute(f"DELETE FROM GUILD_CONFIGS WHERE guild_id = {guild_id}")
         return await conn.close()
@@ -114,14 +105,12 @@ class GuildConfigs:
 class MuteConfigs:
     @staticmethod
     async def read(target_id, target_type):
-        return False
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         row = await conn.fetch(f"SELECT * FROM MUTE_CONFIGS WHERE target_id = {target_id} AND target_type = {target_type.value};")
         return row is True
 
     @staticmethod
-    async def add(target_id, target_type: MutingTarget):
-        return
+    async def add(target_id, target_type: MutingTargets):
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         await conn.execute(
             f"INSERT INTO MUTE_CONFIG VALUES ({target_id}, {target_type.value});"
@@ -130,7 +119,6 @@ class MuteConfigs:
 
     @staticmethod
     async def remove(target_id):
-        return
         conn = await asyncpg.connect(os.environ["SQL_TOKEN"])
         await conn.execute(f"DELETE FROM USER_CONFIGS WHERE target_id = {target_id}")
         return await conn.close()

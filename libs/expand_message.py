@@ -1,4 +1,3 @@
-from discord.ext.commands.core import guild_only
 from .dataaccess import UserConfigs, MemberConfigs, GuildConfigs
 
 

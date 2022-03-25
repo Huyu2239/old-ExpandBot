@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 from typing import List
 
-from libs import utils
+import libs
 
 regex_discord_message_url = (
     "https://(ptb.|canary.)?discord(app)?.com/channels/"
@@ -23,13 +23,6 @@ class FetchMessageResult:
 
 
 class Expand(commands.Cog):
-    """
-    message: on_messageの引数によるMessageObject
-    msg(msgs): 引用されたMessageObject
-    m :botが送信したMessageObject
-    Check.hoge: 当てはまる時にTrue
-    """
-
     def __init__(self, bot):
         self.bot = bot
 
@@ -43,9 +36,9 @@ class Expand(commands.Cog):
                 results.append(FetchMessageResult(False, None, url, "Guild-NotFound"))
                 continue
             msg, error = await self.fetch_msg_with_id(
-                msg_guild=self.bot.get_guild(int(ids["guild"])),
-                msg_channel_id=int(ids["channel"]),
-                msg_id=int(ids["message"]),
+                guild=self.bot.get_guild(int(ids["guild"])),
+                channel_id=int(ids["channel"]),
+                message_id=int(ids["message"]),
             )
             if error:
                 results.append(FetchMessageResult(False, None, url, error))
@@ -64,12 +57,12 @@ class Expand(commands.Cog):
             results.append(FetchMessageResult(True, msg, url, None))
         return results
 
-    async def fetch_msg_with_id(self, msg_guild, msg_channel_id, msg_id):
-        channel = msg_guild.get_channel(msg_channel_id)
+    async def fetch_msg_with_id(self, guild, channel_id, message_id):
+        channel = guild.get_channel(channel_id)
         if channel is None:
             return None, "Channel-NotFound"
         try:
-            msg = await channel.fetch_message(msg_id)
+            msg = await channel.fetch_message(message_id)
         except Exception:
             return None, "Message-NotFound"
         return msg, None
@@ -77,7 +70,7 @@ class Expand(commands.Cog):
     @commands.guild_only()
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot or await utils.muted_in(message):
+        if message.author.bot or await libs.muted_in(message):
             return
         results = await self.find_msgs(message)
         errors = []
@@ -87,7 +80,7 @@ class Expand(commands.Cog):
                 continue
             msg = result.msg
             sent_ms = []
-            embed_em = await self.bot.embed.compose_embed(self.bot, msg, message)
+            embed_em = await libs.compose_embed(msg, message)
             sent_ms.append(await message.channel.send(embed=embed_em[0]))
             if len(msg.attachments) >= 2:
                 for attachment in msg.attachments[1:]:

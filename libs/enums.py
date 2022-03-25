@@ -6,7 +6,7 @@ class HelpTargetCommands(enum.IntEnum):
     SET = enum.auto()
 
 
-class MutingTarget(enum.IntEnum):
+class MutingTargets(enum.IntEnum):
     USER = enum.auto()
     GUILD = enum.auto()
     CATEGORY = enum.auto()
@@ -14,7 +14,7 @@ class MutingTarget(enum.IntEnum):
     ROLE = enum.auto()
 
 
-class SettingTarget(enum.IntEnum):
+class SettingTargets(enum.IntEnum):
     USER = enum.auto()
     MEMBER = enum.auto()
     GUILD = enum.auto()
